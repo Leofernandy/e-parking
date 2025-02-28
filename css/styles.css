@@ -1,0 +1,119 @@
+/* Background dan Warna */
+body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+}
+
+.text-navy {
+    color: #2E4A5E;
+}
+
+/* Navbar */
+.navbar {
+    padding: 10px 20px;
+}
+
+.navbar-brand img {
+    border-radius: 50%;
+}
+
+/* Card */
+.card {
+    border: none;
+    background: white;
+    margin-top: -50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    color: #2E4A5E;
+    border-bottom: 2px solid #2E4A5E;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Form */
+.card .form-control {
+    border-radius: 10px;
+    padding-left: 40px;
+}
+
+.card .form-group {
+    position: relative;
+}
+
+.card .form-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #2E4A5E;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+
+/* Tombol */
+.card .btn-navy {
+    background: #2E4A5E;
+    border: none;
+    transition: background 0.3s;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card .btn-navy:hover {
+    background: #243b53;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Link */
+.card a {
+    color: #2E4A5E;
+    text-decoration: none;
+}
+
+.card a:hover {
+    text-decoration: underline;
+}
+
+/* Separator */
+.separator {
+    text-align: center;
+    margin: 20px 0;
+    color: #9aa5b1;
+    position: relative;
+}
+
+.separator::before,
+.separator::after {
+    content: "";
+    display: inline-block;
+    width: 30%;
+    height: 1px;
+    background: #d9e2ec;
+    position: absolute;
+    top: 50%;
+}
+
+.separator::before {
+    left: 0;
+}
+
+.separator::after {
+    right: 0;
+}
+
+
+
