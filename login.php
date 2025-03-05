@@ -35,7 +35,8 @@
                     <i class="bi bi-lock"></i>
                     <input type="password" name="password" class="form-control" placeholder="Kata Sandi" required>
                 </div>
-                <button type="submit" class="btn btn-navy w-100">Masuk</button>
+                <a href="reservasi.php" class="btn btn-navy w-100">Masuk</a>
+
 
                 <div class="separator">atau</div>
 
