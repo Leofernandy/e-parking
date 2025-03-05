@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parkeer - Landing Page</title>
+    <link rel="stylesheet" href="css/styles.css">
+    
     <style>
         :root {
             --primary: #2E4A5E;
@@ -40,19 +42,20 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem 5%;
+            padding: 1rem 3%;
             margin: 0 auto;
             max-width: 1400px;
         }
         
         .logo-container {
+            height:30px;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
         
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary);
             text-decoration: none;
@@ -575,6 +578,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body>
+
+    
     <!-- Header -->
     <header>
         <nav class="navbar">
@@ -588,7 +593,7 @@
                 <a href="#testimonials">Testimoni</a>
                 <a href="#contact">Kontak</a>
             </div>
-            <a href="#" class="cta-button">Login</a>
+            <a href="login.php" class="cta-button">Login</a>
         </nav>
     </header>
 
@@ -599,7 +604,7 @@
                 <h1>Solusi Parkir Cerdas untuk Era Digital</h1>
                 <p>Kelola parkir kendaraan Anda secara efisien dengan Parkeer. Platform manajemen parkir terpadu yang menggabungkan teknologi terdepan untuk pengalaman parkir tanpa hambatan.</p>
                 <div class="hero-buttons">
-                    <a href="#" class="btn-secondary">Coba Gratis</a>
+                    <a href="registrasi.php" class="btn-secondary">Coba Gratis</a>
                     <a href="#" class="btn-secondary">Pelajari Lebih Lanjut</a>
                 </div>
             </div>
@@ -691,7 +696,7 @@
                 </div>
                 <div class="testimonial-author">
                     <div class="author-image">
-                        <img src="/api/placeholder/50/50" alt="Ahmad">
+                        <img src="assets/img/profilepic.jpg" alt="Ahmad">
                     </div>
                     <div class="author-info">
                         <h4>Ahmad Setiawan</h4>
@@ -705,7 +710,7 @@
                 </div>
                 <div class="testimonial-author">
                     <div class="author-image">
-                        <img src="/api/placeholder/50/50" alt="Siti">
+                        <img src="assets/img/profilepic.jpg" alt="Siti">
                     </div>
                     <div class="author-info">
                         <h4>Siti Rahayu</h4>
@@ -719,7 +724,7 @@
                 </div>
                 <div class="testimonial-author">
                     <div class="author-image">
-                        <img src="/api/placeholder/50/50" alt="Budi">
+                        <img src="assets/img/profilepic.jpg" alt="Budi">
                     </div>
                     <div class="author-info">
                         <h4>Budi Pratama</h4>
