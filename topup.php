@@ -100,11 +100,11 @@
     
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <a href="#">Reservasi</a>
+        <a href="reservasi.php">Reservasi</a>
         <a href="riwayat.php">Riwayat Pemesanan</a>
-        <a href="#">Dompet</a>
-        <a href="#">Akun</a>
-        <a href="bantuan.php">Bantuan</a>
+        <a href="dompet.php">Dompet</a>
+        <a href="PengaturanAkun.php">Akun</a>
+        <a href="bantuan.php">Notifikasi</a>
     </div>
     
     <!-- Content -->
@@ -190,7 +190,7 @@
             <div class="top-up-method">
                 <h5><i class="bi bi-phone"></i> Internet / Mobile Banking</h5>
                 <div class="bank-list">
-                    <a href="konfirmasi_top_up.php">
+                    <a href="konfirmarsi_top_up.php">
                         <div class="bank-item">
                             <img src="assets/img/bcam.png" alt="BCA" class="bank-logo"> m-BCA
                         </div>
