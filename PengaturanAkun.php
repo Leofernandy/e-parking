@@ -3,23 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akun</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Akun Saya - Parkeer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/styles.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #2E4A5E;
+            background: #f0f4f8;
             margin: 0;
             padding: 0;
-        }
-        .container {
-            width: 100%;
-            max-width: 450px;
-            margin: 140px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         .fixed-header {
             position: fixed;
@@ -36,12 +28,43 @@
             height: 70px;
         }
         .profile-img {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             object-fit: cover;
         }
-        
+        .container {
+            margin-top: 90px;
+        }
+        .profile-section {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .profile-section p {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .list-group-item {
+            padding: 20px;
+            font-size: 17px;
+        }
+        .btn-signout {
+            background: #d9534f;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 40px;
+            text-decoration: none;
+        }
+        .btn-signout:hover {
+            background: #c9302c;
+        }
+
         .sidebar {
             position: fixed;
             left: -250px;
@@ -53,6 +76,7 @@
             transition: 0.3s;
             padding-top: 20px;
             overflow-y: auto;
+            z-index:1050;
         }
         .sidebar.active {
             left: 0;
@@ -65,90 +89,11 @@
         }
         .sidebar a:hover {
             background: #243b53;
-        }
-        
-
-        /* Tombol Cari Parkir dan Reservasi */
-        .btn-navy {
-            background: #2E4A5E; /* Warna biru navbar */
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: normal;
-            transition: background 0.3s, box-shadow 0.3s;
-        }
-
-        .btn-navy:hover {
-            background: #243b53; /* Warna biru gelap saat hover */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .header {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #2E4A5E;
-            padding: 15px 0;
-        }
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            background: #fff;
-            border-radius: 10px;
-        }
-        .profile-section img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-        }
-        .profile-info {
-            flex-grow: 1;
-        }
-        .profile-info p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #555;
-        }
-        .edit-icon {
-            color: #d32f2f;
-            cursor: pointer;
-            font-size: 18px;
-        }
-        .menu-section {
-            margin-top: 20px;
-        }
-        .menu-section h2 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 12px;
-        }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 8px;
-            background: #f5f5f5;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .menu-item:hover {
-            background: #e0e0e0;
-        }
-
-        a{
-            text-decoration:none;
-            color:black;
-        }
+        }   
     </style>
 </head>
 <body>
-    
+    <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-header">
         <div class="d-flex align-items-center">
             <button class="btn btn-light me-3" id="menu-toggle"><i class="bi bi-list"></i></button>
@@ -162,39 +107,55 @@
             <span class="fw-bold text-navy">Fedor Reyes</span>
         </div>
     </nav>
+
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <a href="#">Reservasi</a>
+        <a href="reservasi.php">Reservasi</a>
         <a href="riwayat.php">Riwayat Pemesanan</a>
-        <a href="#">Dompet</a>
-        <a href="#">Akun</a>
-        <a href="bantuan.php">Bantuan</a>
+        <a href="dompet.php">Dompet</a>
+        <a href="PengaturanAkun.php">Akun</a>
+        <a href="bantuan.php">Notifikasi</a>
     </div>
+    
+    <!-- Content -->
     <div class="container">
-        <div class="header">Akun Saya</div>
-        <div class="profile-section">
-            <img src="profile.jpg" alt="Profile Picture">
-            <div class="profile-info">
-                <p><strong>Leo</strong></p>
-                <p>+62 896 3637 0095</p>
-                <p>example@mail.com</p>
+        <div class="header text-center fw-bold fs-4 mb-3 text-navy">Akun Saya</div>
+        <div class="profile-section d-flex align-items-center ml-2">
+        <img src="assets/img/profilepic.jpg" alt="Foto Profil" 
+            class="rounded-circle mx-4" width="90" height="90" 
+            style="object-fit: cover; aspect-ratio: 1/1;">
+
+            <div class="ms-2">
+                <p class="fw-bold fs-5">Fedor Reyes</p>
+                <p class="text-muted fs-8">+62 812 3456 7890</p>
+                <p class="text-muted fs-8">fedor@example.com</p>
             </div>
-            <span class="edit-icon">✏️</span>
+            <a href="#" class="ms-auto text-navy fs-4"><i class="bi bi-pencil-square"></i></a>
         </div>
-        <div class="menu-section">
-            <h2>Pengaturan & Keamanan</h2>
-            <div class="menu-item">🔒 Atur Keamanan</div>
-            <div class="menu-item"><a href="http://localhost/23SI2/Parkeer/Edit%20Vehicle.php">🚗 Kelola Kendaraan</a></div>
-            <div class="menu-item">🌍 Pilih Bahasa</div>
-            <div class="menu-item">🎁 Bagikan & Dapatkan Bonus</div>
+        
+        <div class="menu-section mt-4">
+            <h5 class="text-secondary">Pengaturan & Keamanan</h5>
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-shield-lock p-2"></i> Atur Keamanan</a>
+                <a href="KelolaKendaraan.php" class="list-group-item list-group-item-action "><i class="bi bi-car-front p-2"></i> Kelola Kendaraan</a>
+                <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-translate p-2"></i> Pilih Bahasa</a>
+                <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-gift p-2"></i> Bagikan & Dapatkan Bonus</a>
+            </div>
         </div>
-        <div class="menu-section">
-            <h2>Bantuan & Informasi</h2>
-            <div class="menu-item">📖 Panduan Pengguna</div>
-            <div class="menu-item">📍 Lokasi Favorit Saya</div>
-            <div class="menu-item">❓ Pusat Bantuan</div>
-            <div class="menu-item">💬 Hubungi Customer Service</div>
+    
+        <div class="menu-section mt-4 mb-4">
+            <h5 class="text-secondary">Bantuan & Informasi</h5>
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-book p-2"></i>  Panduan Pengguna</a>
+                <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-geo-alt p-2"></i> Lokasi Favorit Saya</a>
+                <a href="bantuan.php" class="list-group-item list-group-item-action"><i class="bi bi-question-circle p-2"></i> Pusat Bantuan</a>
+                <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-chat-dots p-2"></i> Hubungi Customer Service</a>
+            </div>
         </div>
+    
+        <a href="login.php" class="btn-signout">Sign Out</a>
     </div>
+    
     <script>
         document.getElementById('menu-toggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
