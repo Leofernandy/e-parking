@@ -3,20 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifikasi - Parkeer</title>
-    <!-- Bootstrap CSS -->
+    <title>Reservasi - Parkeer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        .sidebar {
-            width: 250px;
-            height: 100vh;
+        
+        body {
+            background: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+        .fixed-header {
             position: fixed;
-            background-color: #343a40;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 70px;
+            width: 250px;
+            height: calc(100vh - 70px);
+            background: #2E4A5E;
+            color: white;
+            transition: 0.3s;
             padding-top: 20px;
+            overflow-y: auto;
+            z-index:1000;
+        }
+        .sidebar.active {
+            left: 0;
         }
         .sidebar a {
             padding: 10px 20px;
@@ -25,17 +58,26 @@
             text-decoration: none;
         }
         .sidebar a:hover {
-            background-color: #495057;
+            background: #243b53;
         }
-        .content {
-            margin-left: 250px;
-            padding: 20px;
+        
+
+        /* Tombol Cari Parkir dan Reservasi */
+        .btn-navy {
+            background: #2E4A5E; /* Warna biru navbar */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: normal;
+            transition: background 0.3s, box-shadow 0.3s;
         }
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+
+        .btn-navy:hover {
+            background: #243b53; /* Warna biru gelap saat hover */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
+
         .card-custom {
             border-left: 8px solid;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -60,32 +102,46 @@
             font-size: 1.2rem;
             font-weight: bold;
         }
+        
+        
+
     </style>
 </head>
-<body class="bg-light">
-    <div class="sidebar">
-        <a href="dashboard.php"><i class="bi bi-house-door-fill"></i> Dashboard</a>
-        <a href="bantuan.php"><i class="bi bi-question-circle-fill"></i> Bantuan</a>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-header">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-light me-3" id="menu-toggle"><i class="bi bi-list"></i></button>
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="assets/img/Logobgwhite.png" alt="Parkeer Logo" width="40" class="me-2">
+                <span class="fw-bold fs-3 text-navy">Parkeer</span>
+            </a>
+        </div>
+        <div class="d-flex align-items-center">
+            <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
+            <span class="fw-bold text-navy">Fedor Reyes</span>
+        </div>
+    </nav>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="reservasi.php">Reservasi</a>
+        <a href="riwayat.php">Riwayat Pemesanan</a>
+        <a href="dompet.php">Dompet</a>
+        <a href="PengaturanAkun.php">Akun</a>
+        <a href="bantuan.php">Notifikasi</a>
     </div>
-
+    
+    <!-- Content -->
     <div class="content">
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="#">
-                    <img src="assets/img/Logobgwhite.png" alt="Parkeer Logo" width="40" class="me-2">
-                    <span class="text-navy fw-bold fs-3">Parkeer</span>
-                </a>
-                <div class="ms-auto">
-                    <img src="assets/img/profile.jpg" alt="Profile" class="profile-pic">
-                </div>
-            </div>
         </nav>
 
         <div class="container-fluid mt-5 px-3">
-            <h2 class="text-navy text-center fw-bold mb-4">Notifikasi</h2>
-            <div class="row justify-content-center px-3">
+            <h2 class="text-navy text-center fw-bold my-5 pt-3">Notifikasi</h2>
+            <div class="row justify-content-center pt-3">
                 <div class="col-12">
-                    <div class="card card-custom card-danger">
+                    <div class="card card-custom card-danger mb-2">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-exclamation-triangle-fill fs-3 text-danger me-3"></i>
                             <div>
@@ -97,7 +153,7 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <div class="card card-custom card-success">
+                    <div class="card card-custom card-success mt-2">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-gift-fill fs-3 text-success me-3"></i>
                             <div>
@@ -110,11 +166,19 @@
                 </div>
             </div>
             <div class="text-center mt-4">
-                <a href="dashboard.php" class="btn btn-navy"><i class="bi bi-arrow-left"></i> Kembali ke Dashboard</a>
+                <a href="reservasi.php" class="btn btn-navy"><i class="bi bi-arrow-left"></i> Kembali ke Dashboard</a>
             </div>
         </div>
     </div>
+     
+     
+    
 
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+    </script>
     <script>
         function updateTimers() {
             let sisaWaktu = document.getElementById("sisaWaktu");
