@@ -112,6 +112,15 @@
             margin: 5px;
             radius:10px;
         }
+
+        .btn-primary{
+            background: #2E4A5E;
+            color:white;
+
+
+        }
+
+    
         .sidebar {
             position: fixed;
             left: -250px;
@@ -123,6 +132,7 @@
             transition: 0.3s;
             padding-top: 20px;
             overflow-y: auto;
+            z-index:1000;
         }
         .sidebar.active {
             left: 0;
@@ -155,10 +165,10 @@
     </nav>
     <div class="sidebar" id="sidebar">
         <a href="reservasi.php">Reservasi</a>
-        <a href="#">Riwayat Pemesanan</a>
-        <a href="#">Dompet</a>
-        <a href="#">Akun</a>
-        <a href="bantuan.php">Bantuan</a>
+        <a href="riwayat.php">Riwayat Pemesanan</a>
+        <a href="dompet.php">Dompet</a>
+        <a href="PengaturanAkun.php">Akun</a>
+        <a href="bantuan.php">Notifikasi</a>
     </div>
     
 
@@ -215,8 +225,9 @@
                 <!-- Button Group -->
                 <div class="button-container">
                     <button class="btn btn-danger btn-custom">Batal</button>
-                    <button class="btn btn-navy btn-custom">Perpanjang Durasi</button>
+                    <button class="btn btn-primary btn-custom">Perpanjang Durasi</button>
                 </div>
+                
             </div>
         </div>
     </div>
