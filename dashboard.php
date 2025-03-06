@@ -153,7 +153,6 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-header">
         <div class="d-flex align-items-center">
-            <button class="btn btn-light me-3" id="menu-toggle"><i class="bi bi-list"></i></button>
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <img src="assets/img/Logobgwhite.png" alt="Parkeer Logo" width="40" class="me-2">
                 <span class="fw-bold fs-3 text-navy">Parkeer</span>
