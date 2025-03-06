@@ -46,6 +46,7 @@
             transition: 0.3s;
             padding-top: 20px;
             overflow-y: auto;
+            z-index: 1100;
         }
         .sidebar.active {
             left: 0;
@@ -91,6 +92,9 @@
             padding: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             flex: 1;
+            min-width: 300px;
+            position: relative;
+            z-index: 100;
         }
         .wallet-header {
             background: #2E4A5E;
@@ -132,6 +136,7 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            min-width: 300px;
         }
         .transaction-list {
             max-height: 500px;
@@ -199,6 +204,18 @@
         input::placeholder {
             color: rgba(128, 128, 128, 0.56); 
         }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 80px 20px 20px;
+            }
+            .wallet-section, .transactions-section {
+                width: 100%;
+            }
+            
+            
+            
     </style>
 </head>
 <body>
