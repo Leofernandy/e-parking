@@ -137,11 +137,11 @@
     
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <a href="#">Reservasi</a>
+        <a href="reservasi.php">Reservasi</a>
         <a href="riwayat.php">Riwayat Pemesanan</a>
-        <a href="#">Dompet</a>
-        <a href="#">Akun</a>
-        <a href="bantuan.php">Bantuan</a>
+        <a href="dompet.php">Dompet</a>
+        <a href="PengaturanAkun.php">Akun</a>
+        <a href="bantuan.php">Notifikasi</a>
     </div>
     
     <!-- Content -->
@@ -152,7 +152,8 @@
             <div class="col-md-6">
             <div class="saldo-container mb-3">
             <span>Saldo: Rp 250.000</span>
-            <button id="top-up">Top Up</button>
+            <a href="topup.php"><button id="top-up">Top Up</button></a>
+            
         </div>
                 <form>
                     <div class="mb-3">
