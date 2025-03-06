@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Kendaraan</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Reservasi - Parkeer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/styles.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            background: #f0f4f8;
             margin: 0;
             padding: 0;
-            background-color: #2E4A5E;
-            text-align: center;
-            margin: auto;
         }
-        
         .fixed-header {
             position: fixed;
             top: 0;
@@ -61,132 +59,92 @@
             background: #243b53;
         }
         
-
-        /* Tombol Cari Parkir dan Reservasi */
-        .btn-navy {
-            background: #2E4A5E; /* Warna biru navbar */
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: normal;
-            transition: background 0.3s, box-shadow 0.3s;
-        }
-
-        .btn-navy:hover {
-            background: #243b53; /* Warna biru gelap saat hover */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: white;
-            padding: 15px;
-            margin-top: 100px;
-          margin-bottom: 30px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #2E4A5E;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .back-btn {
-            position: absolute;
-            left: 30px;
-            background: none;
-            border: none;
-            font-size: 45px;
-            color: #2E4A5E;
-            cursor: pointer;
-        }
-        .vehicle-card {
-          width: 45%;
-            background: white;
-            margin: 10px auto;
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        .plate {
-            background: black;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .details {
-            flex-grow: 1;
-            padding: 0 15px;
-            text-align: left;
-        }
-        .status {
-            color: green;
-            font-weight: bold;
-        }
-        .warning {
-            color: red;
-            font-size: 12px;
-        }
-        .edit-btn {
-            color: white ;
-            background: #2E4A5E;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 15px;
-          padding:15px;
-          margin-right:30px;
-        }
-        .primary-btn {
-            background: white;
-            color: red;
-            border: 2px solid red;
-            padding: 10px;
-            margin: 10px auto;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            display: block;
-        }
-        .add-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: red;
-            color: white;
-            font-size: 24px;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
         .vehicle-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
+            padding: 20px;
+            margin-top: 90px;
+        }
+        .vehicle-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .plate {
+            font-size: 18px;
+            font-weight: bold;
+            background: #2E4A5E;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            width: 150px; /* Atur lebar tetap */
+            text-align: center; /* Pusatkan teks */
+        }
+        .details {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+        .details h2 {
+            font-size: 20px;
+            margin: 0;
+            color: #2E4A5E;
+        }
+        .details p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
+        .status {
+            background: #FFD700;
+            color: #2E4A5E;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 5px;
+        }
+        .status2 {
+            background: #2E4A5E;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .status2:hover {
+            background: #243b53;
+        }
+        .warning {
+            color: #D9534F;
+            font-weight: bold;
+        }
+        .edit-btn, .add-btn {
+            background: #2E4A5E;
+            color: white;
+            border: none;
+            padding: 15px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight:bold;
+        }
+        .edit-btn:hover, .add-btn:hover {
+            background: #243b53;
         }
 
-      .status2{
-        color: #2E4A5E;
-            font-weight: bold;
-            cursor: pointer;
-        margin-left:5px;
-        
-      }
+        .btn-navy{
+            background: #2E4A5E;
+            color:white;
+
+        }
     </style>
 </head>
 <body>
-     <!-- Header -->
-     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-header">
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-header">
         <div class="d-flex align-items-center">
             <button class="btn btn-light me-3" id="menu-toggle"><i class="bi bi-list"></i></button>
             <a class="navbar-brand d-flex align-items-center" href="#">
@@ -202,44 +160,123 @@
     
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <a href="#">Reservasi</a>
+    <a href="reservasi.php">Reservasi</a>
         <a href="riwayat.php">Riwayat Pemesanan</a>
-        <a href="#">Dompet</a>
-        <a href="#">Akun</a>
-        <a href="bantuan.php">Bantuan</a>
+        <a href="dompet.php">Dompet</a>
+        <a href="PengaturanAkun.php">Akun</a>
+        <a href="bantuan.php">Notifikasi</a>
+    </div>
+    <div class="vehicle-container">
+        <div class="header text-center fw-bold fs-4 mb-3 text-navy">Kendaraan Saya</div>
+        
+        <section class="vehicle-card">
+            <div class="plate">BK 1823 ABR</div>
+            <div class="details">
+                <h2>Toyota Agya</h2>
+                <p>Putih <span class="status">⭐ Utama</span></p>
+                <p class="warning">⚠ Lengkapi data kendaraan anda</p>
+            </div>
+            <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editVehicleModal">UBAH</button>
+        </section>
+        <section class="vehicle-card">
+            <div class="plate">BK 1257 AEH</div>
+            <div class="details">
+                <h2>Mitsubishi Expander</h2>
+                <p>Hitam</p>
+                <p class="warning">⚠ Lengkapi data kendaraan anda</p>
+            </div>
+            <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editVehicleModal">UBAH</button>
+        </section>
+        <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addVehicleModal">Tambah Kendaraan</button>
     </div>
 
-    <header>
-        <button class="back-btn">&lt;</button><a href="http://localhost/23SI2/Parkeer/Profile%20Settings.php"></a>
-        <h1>Kendaraan</h1>
-    </header>
-    <main>
-        <div class="vehicle-container">
-            <section class="vehicle-card">
-                <div class="plate">BK 1223 AEJ</div>
-                <div class="details">
-                    <h2>Toyota</h2>
-                    <p>Putih <span class="status">⭐ Utama</span></p>
-                    <p class="warning">⚠ Lengkapi data kendaraan anda</p>
+    <!-- Modal Tambah Kendaraan -->
+    <div class="modal fade" id="addVehicleModal" tabindex="-1" aria-labelledby="addVehicleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVehicleModalLabel">Tambah Kendaraan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <button class="edit-btn">UBAH</button>
-            </section>
-            <section class="vehicle-card">
-                <div class="plate">BK 1182 GN</div>
-                <div class="details">
-                    <h2>Honda</h2>
-                    <p>Hitam <button class="status2">Jadikan Utama</button></p>
-                    <p class="warning">⚠ Lengkapi data kendaraan anda</p>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-2" placeholder="Nomor Plat Kendaraan">
+                    <input type="text" class="form-control mb-2" placeholder="Merek Kendaraan">
+                    <input type="text" class="form-control mb-2" placeholder="Warna Kendaraan">
                 </div>
-                <button class="edit-btn">UBAH</button>
-            </section>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-navy">Simpan</button>
+                </div>
+            </div>
+        </div>
     </div>
-    </main>
 
+    <!-- Modal Edit Kendaraan -->
+    <div class="modal fade" id="editVehicleModal" tabindex="-1" aria-labelledby="editVehicleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editVehicleModalLabel">Edit Kendaraan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-2" value="BK 1223 AEJ">
+                    <input type="text" class="form-control mb-2" value="Toyota Agya">
+                    <input type="text" class="form-control mb-2" value="Putih">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('menu-toggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
         });
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const addVehicleButton = document.querySelector("#addVehicleModal .btn-navy");
+        const vehicleContainer = document.querySelector(".vehicle-container");
+        
+        addVehicleButton.addEventListener("click", function() {
+            const plateInput = document.querySelector("#addVehicleModal input:nth-child(1)").value;
+            const brandInput = document.querySelector("#addVehicleModal input:nth-child(2)").value;
+            const colorInput = document.querySelector("#addVehicleModal input:nth-child(3)").value;
+
+            if (plateInput && brandInput && colorInput) {
+                const vehicleCard = document.createElement("section");
+                vehicleCard.classList.add("vehicle-card");
+                vehicleCard.innerHTML = `
+                    <div class="plate">${plateInput}</div>
+                    <div class="details">
+                        <h2>${brandInput}</h2>
+                        <p>${colorInput}</p>
+                        <p class="warning">⚠ Lengkapi data kendaraan anda</p>
+                    </div>
+                    <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editVehicleModal">UBAH</button>
+                `;
+
+                vehicleContainer.insertBefore(vehicleCard, document.querySelector(".add-btn"));
+
+                // Reset input fields
+                document.querySelector("#addVehicleModal input:nth-child(1)").value = "";
+                document.querySelector("#addVehicleModal input:nth-child(2)").value = "";
+                document.querySelector("#addVehicleModal input:nth-child(3)").value = "";
+
+                // Tutup modal setelah menambahkan kendaraan
+                var modal = bootstrap.Modal.getInstance(document.getElementById('addVehicleModal'));
+                modal.hide();
+            } else {
+                alert("Harap isi semua kolom kendaraan!");
+            }
+        });
+    });
+    </script>
+
 </body>
 </html>
