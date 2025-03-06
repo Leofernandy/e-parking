@@ -35,7 +35,7 @@
                     <input type="password" name="password" class="form-control" placeholder="Kata Sandi" required>
                     <i class="bi bi-lock-fill"></i>
                 </div>
-                <button type="submit" class="btn btn-navy w-100">Masuk</button>
+                <a href="dashboard.php" class="btn btn-navy w-100">Masuk</a>
                 <p class="text-center mt-3">
                     <a href="login.php">Kembali ke Beranda</a>
                 </p>
