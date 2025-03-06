@@ -115,6 +115,7 @@
             font-size: 14px;
             font-weight: 600;
             margin-top: 4px;
+            margin-bottom:10px;
         }
 
         #saldo{
@@ -125,6 +126,7 @@
             background: white;
             color: #2E4A5E;
             border: none;
+            text-decoration:none;
             padding: 8px 20px;
             border-radius: 5px;
             margin-top: 30px;
@@ -236,11 +238,11 @@
     
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <a href="#">Reservasi</a>
+        <a href="reservasi.php">Reservasi</a>
         <a href="riwayat.php">Riwayat Pemesanan</a>
-        <a href="#">Dompet</a>
-        <a href="#">Akun</a>
-        <a href="bantuan.php">Bantuan</a>
+        <a href="dompet.php">Dompet</a>
+        <a href="PengaturanAkun.php">Akun</a>
+        <a href="bantuan.php">Notifikasi</a>
     </div>
     
     <!-- Content -->
@@ -249,7 +251,7 @@
             <div class="wallet-header">
                 <span>Saldo</span>
                 <div class="wallet-balance">Rp <span id="saldo">150.000</span></div>
-                <button class="btn-topup" onclick="topUp()">Top Up</button>
+                <a class="btn-topup" href="topup.php">Top Up</a>
             </div>
             <div class="promo">
                 <span>Promo</span><br>
