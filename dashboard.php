@@ -37,32 +37,6 @@
             object-fit: cover;
         }
         
-        .sidebar {
-            position: fixed;
-            left: -250px;
-            top: 70px;
-            width: 250px;
-            height: calc(100vh - 70px);
-            background: #2E4A5E;
-            color: white;
-            transition: 0.3s;
-            padding-top: 20px;
-            overflow-y: auto;
-            z-index: 999;
-        }
-        .sidebar.active {
-            left: 0;
-        }
-        .sidebar a {
-            padding: 10px 20px;
-            display: block;
-            color: white;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background: #243b53;
-        }
-        
         .main-content {
             margin-top: 90px;
             margin-left: 20px;
@@ -190,21 +164,6 @@
             <span class="fw-bold text-navy">Fedor Reyes</span>
         </div>
     </nav>
-    
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <a href="#">Reservasi</a>
-        <a href="riwayat.php">Riwayat Pemesanan</a>
-        <a href="#">Dompet</a>
-        <a href="#">Akun</a>
-        <a href="bantuan.php">Bantuan</a>
-    </div>
-
-    <script>
-        document.getElementById('menu-toggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
-    </script>
     
     <!-- Main Content -->
     <div class="main-content" id="main-content">
