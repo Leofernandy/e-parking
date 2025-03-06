@@ -155,12 +155,12 @@
         <div class="d-flex align-items-center">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <img src="assets/img/Logobgwhite.png" alt="Parkeer Logo" width="40" class="me-2">
-                <span class="fw-bold fs-3 text-navy">Parkeer</span>
+                <span class="fw-bold fs-3 text-navy">Parkeer Admin</span>
             </a>
         </div>
         <div class="d-flex align-items-center">
             <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
-            <span class="fw-bold text-navy">Fedor Reyes</span>
+            <span class="fw-bold text-navy">Admin</span>
         </div>
     </nav>
     
@@ -171,7 +171,7 @@
             <header class="flex justify-between items-center mb-8">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-800">Parking Management System</h1>
-                    <p class="text-gray-600">Integrated Parking Solution</p>
+                    <p class="text-gray-600">Centre Point Mall</p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative">
