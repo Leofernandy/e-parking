@@ -178,16 +178,11 @@
                         <input type="text" placeholder="Search vehicle/ticket" class="border rounded-md px-3 py-2 w-64">
                         <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
                     </div>
-                    <div class="relative">
-                        <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                            <i class="fas fa-user mr-2"></i>Admin Panel
-                        </button>
-                    </div>
                 </div>
             </header>
             
-            <!-- Floor Overview -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Floor Overview - Only showing Floor 1 -->
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
                 <div class="bg-white shadow-md rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-4">
                         <i class="fas fa-parking text-blue-600 mr-2"></i>Floor 1 Status
@@ -204,46 +199,6 @@
                         <div>
                             <p class="text-gray-600">Occupied</p>
                             <p class="text-2xl font-bold text-red-600">55</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white shadow-md rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-4">
-                        <i class="fas fa-parking text-green-600 mr-2"></i>Floor 2 Status
-                    </h2>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600">Total Slots</p>
-                            <p class="text-2xl font-bold">120</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600">Available</p>
-                            <p class="text-2xl font-bold text-green-600">78</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600">Occupied</p>
-                            <p class="text-2xl font-bold text-red-600">42</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white shadow-md rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-4">
-                        <i class="fas fa-parking text-red-600 mr-2"></i>Floor 3 Status
-                    </h2>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600">Total Slots</p>
-                            <p class="text-2xl font-bold">80</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600">Available</p>
-                            <p class="text-2xl font-bold text-green-600">0</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600">Occupied</p>
-                            <p class="text-2xl font-bold text-red-600">80</p>
                         </div>
                     </div>
                 </div>
@@ -381,7 +336,7 @@
                             <select class="w-full border rounded-md px-3 py-2">
                                 <option>Car</option>
                                 <option>SUV</option>
-                                <option>Truck</option>
+                                <option>Motorcycle</option>
                             </select>
                         </div>
                         <div>
@@ -400,136 +355,26 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Key Metrics Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 my-8">
-                <div class="bg-white shadow-md rounded-lg p-6 text-center">
-                    <i class="fas fa-car text-3xl text-blue-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold">Total Vehicles</h3>
-                    <p class="text-4xl font-bold text-gray-800">1,245</p>
-                    <p class="text-sm text-gray-500">Today's Entry</p>
-                </div>
-                <div class="bg-white shadow-md rounded-lg p-6 text-center">
-                    <i class="fas fa-money-bill-wave text-3xl text-green-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold">Revenue</h3>
-                    <p class="text-4xl font-bold text-gray-800">Rp 125,000,000</p>
-                    <p class="text-sm text-gray-500">This Month</p>
-                </div>
-                <div class="bg-white shadow-md rounded-lg p-6 text-center">
-                    <i class="fas fa-parking text-3xl text-purple-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold">Occupancy</h3>
-                    <p class="text-4xl font-bold text-gray-800">68%</p>
-                    <p class="text-sm text-gray-500">Current Rate</p>
-                </div>
-                <div class="bg-white shadow-md rounded-lg p-6 text-center">
-                    <i class="fas fa-clock text-3xl text-orange-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold">Avg. Stay</h3>
-                    <p class="text-4xl font-bold text-gray-800">3h 45m</p>
-                    <p class="text-sm text-gray-500">Per Vehicle</p>
-                </div>
-            </div>
-
+        
             <!-- Advanced Dashboard Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Left Column: Operational Insights -->
-                <div class="space-y-6">
-                    <!-- Live CCTV Feed -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-4">
-                            <i class="fas fa-video mr-2 text-red-600"></i>Live CCTV Feeds
-                        </h2>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-gray-200 rounded-lg h-40 flex items-center justify-center">
-                                <p class="text-gray-500">Entrance Camera</p>
-                            </div>
-                            <div class="bg-gray-200 rounded-lg h-40 flex items-center justify-center">
-                                <p class="text-gray-500">Exit Camera</p>
-                            </div>
-                            <div class="bg-gray-200 rounded-lg h-40 flex items-center justify-center">
-                                <p class="text-gray-500">Level 1 Camera</p>
-                            </div>
-                            <div class="bg-gray-200 rounded-lg h-40 flex items-center justify-center">
-                                <p class="text-gray-500">Level 2 Camera</p>
-                            </div>
+            <div class="grid grid-cols-1 md gap-6 mt-8">
+                <!-- Active Parking Sessions -->
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-4">
+                        <i class="fas fa-parking mr-2 text-green-600"></i>Active Parking
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between border-b pb-2">
+                            <span>Total Active Sessions</span>
+                            <span class="font-bold">158</span>
                         </div>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-4">
-                            <i class="fas fa-tools mr-2 text-gray-600"></i>Quick Actions
-                        </h2>
-                        <div class="grid grid-cols-3 gap-4">
-                            <button class="btn-navy">
-                                <i class="fas fa-ticket-alt mr-2"></i>Issue Ticket
-                            </button>
-                            <button class="btn-navy">
-                                <i class="fas fa-print mr-2"></i>Print Receipt
-                            </button>
-                            <button class="btn-navy">
-                                <i class="fas fa-sync mr-2"></i>Refresh
-                            </button>
+                        <div class="flex justify-between border-b pb-2">
+                            <span>Cars</span>
+                            <span class="font-bold text-blue-600">95</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Middle Column: Analytics -->
-                <div class="space-y-6">
-                    <!-- Vehicle Type Distribution -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-4">Vehicle Distribution</h2>
-                        <canvas id="vehicleTypeChart"></canvas>
-                    </div>
-
-                    <!-- Revenue Analysis -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-4">Monthly Revenue</h2>
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Right Column: Strategic Insights -->
-                <div class="space-y-6">
-                    <!-- Active Parking Sessions -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-4">
-                            <i class="fas fa-parking mr-2 text-green-600"></i>Active Parking
-                        </h2>
-                        <div class="space-y-4">
-                            <div class="flex justify-between border-b pb-2">
-                                <span>Total Active Sessions</span>
-                                <span class="font-bold">158</span>
-                            </div>
-                            <div class="flex justify-between border-b pb-2">
-                                <span>Cars</span>
-                                <span class="font-bold text-blue-600">95</span>
-                            </div>
-                            <div class="flex justify-between border-b pb-2">
-                                <span>Motorcycles</span>
-                                <span class="font-bold text-green-600">63</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Trucks</span>
-                                <span class="font-bold text-red-600">4</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- System Health & Alerts -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-4">
-                            <i class="fas fa-bell mr-2 text-yellow-600"></i>System Alerts
-                        </h2>
-                        <div class="space-y-3">
-                            <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3">
-                                <p class="text-sm">Parking Slot 24 Maintenance Required</p>
-                            </div>
-                            <div class="bg-red-100 border-l-4 border-red-500 p-3">
-                                <p class="text-sm">Camera 3 Offline - Entrance Area</p>
-                            </div>
-                            <div class="bg-blue-100 border-l-4 border-blue-500 p-3">
-                                <p class="text-sm">Software Update Available</p>
-                            </div>
+                        <div class="flex justify-between">
+                            <span>Motorcycles</span>
+                            <span class="font-bold text-green-600">63</span>
                         </div>
                     </div>
                 </div>
@@ -609,86 +454,62 @@
                                 <td class="p-3">09:45 AM</td>
                                 <td class="p-3">3h 15m</td>
                                 <td class="p-3">Rp 45,000</td>
-                    <td class="p-3">
-                        <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs mr-2">
-                            <i class="fas fa-print mr-1"></i>Receipt
-                        </button>
-                        <button class="bg-gray-500 text-white px-2 py-1 rounded text-xs">
-                            <i class="fas fa-archive mr-1"></i>Archive
-                        </button>
-                    </td>
-                </tr>
-                <tr class="border-b status-reserved">
-                    <td class="p-3">
-                        <span class="status-badge text-yellow-700" title="Reserved Parking">
-                            <i class="fas fa-clock"></i>Reserved
-                        </span>
-                    </td>
-                    <td class="p-3">B 3456 GHI</td>
-                    <td class="p-3">Truck</td>
-                    <td class="p-3">Scheduled: 04:30 PM</td>
-                    <td class="p-3">-</td>
-                    <td class="p-3">Pending</td>
-                    <td class="p-3">Rp 50,000 (Advance)</td>
-                    <td class="p-3">
-                        <button class="bg-yellow-500 text-white px-2 py-1 rounded text-xs mr-2">
-                            <i class="fas fa-edit mr-1"></i>Modify
-                        </button>
-                        <button class="bg-red-500 text-white px-2 py-1 rounded text-xs">
-                            <i class="fas fa-times mr-1"></i>Cancel
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                                <td class="p-3">
+                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs mr-2">
+                                        <i class="fas fa-print mr-1"></i>Receipt
+                                    </button>
+                                    <button class="bg-gray-500 text-white px-2 py-1 rounded text-xs">
+                                        <i class="fas fa-archive mr-1"></i>Archive
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="border-b status-reserved">
+                                <td class="p-3">
+                                    <span class="status-badge text-yellow-700" title="Reserved Parking">
+                                        <i class="fas fa-clock"></i>Reserved
+                                    </span>
+                                </td>
+                                <td class="p-3">B 3456 GHI</td>
+                                <td class="p-3">SUV</td>
+                                <td class="p-3">Scheduled: 04:30 PM</td>
+                                <td class="p-3">-</td>
+                                <td class="p-3">Pending</td>
+                                <td class="p-3">Rp 30,000 (Advance)</td>
+                                <td class="p-3">
+                                    <button class="bg-yellow-500 text-white px-2 py-1 rounded text-xs mr-2">
+                                        <i class="fas fa-edit mr-1"></i>Modify
+                                    </button>
+                                    <button class="bg-red-500 text-white px-2 py-1 rounded text-xs">
+                                        <i class="fas fa-times mr-1"></i>Cancel
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Vehicle Type Distribution Chart
-        const vehicleCtx = document.getElementById('vehicleTypeChart').getContext('2d');
-        new Chart(vehicleCtx, {
-            type: 'pie',
-            data: {
-                labels: ['Car', 'Motorcycle', 'Truck'],
-                datasets: [{
-                    data: [60, 35, 5],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(255, 99, 132, 0.6)'
-                    ]
-                }]
-            },
-            options: { responsive: true }
-        });
-
-        // Monthly Revenue Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(revenueCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Monthly Revenue (Rp)',
-                    data: [80000000, 95000000, 110000000, 125000000, 115000000, 140000000],
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return 'Rp ' + value.toLocaleString();
-                            }
-                        }
-                    }
+        // Select parking slot functionality
+        const parkingSlots = document.querySelectorAll('.parking-slot');
+        const selectedSlotInput = document.getElementById('selectedSlot');
+        
+        parkingSlots.forEach(slot => {
+            slot.addEventListener('click', function() {
+                // Only allow selection of available slots
+                if (this.classList.contains('parking-slot-available')) {
+                    // Remove selected class from all slots
+                    parkingSlots.forEach(s => s.classList.remove('parking-slot-selected'));
+                    
+                    // Add selected class to clicked slot
+                    this.classList.add('parking-slot-selected');
+                    
+                    // Update selected slot input
+                    selectedSlotInput.value = this.getAttribute('data-slot');
                 }
-            }
+            });
         });
     </script>
 </body>
