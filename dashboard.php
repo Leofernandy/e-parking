@@ -120,6 +120,17 @@
             border-color: #FFC107;
             color: #FFC107;
         }
+        .parking-slot-vip {
+            background-color: #f0e6ff;
+            border-color: #8A2BE2;
+            color: #8A2BE2;
+        }
+        .parking-slot-motorcycle {
+            aspect-ratio: 1/1;
+            background-color: #e6f3ff;
+            border-color: #007BFF;
+            color: #007BFF;
+        }
         .parking-slot-selected {
             transform: scale(1.05);
             box-shadow: 0 0 15px rgba(0,123,255,0.5);
@@ -147,6 +158,14 @@
         .text-navy {
             color: #2E4A5E;
         }
+        
+        .vehicle-icon {
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        
+        
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -181,24 +200,61 @@
                 </div>
             </header>
             
-            <!-- Floor Overview - Only showing Floor 1 -->
-            <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
-                <div class="bg-white shadow-md rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-4">
-                        <i class="fas fa-parking text-blue-600 mr-2"></i>Floor 1 Status
-                    </h2>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600">Total Slots</p>
+            <!-- Floor Overview - Enhanced version -->
+            <div class="mb-8">
+                <div class="bg-white shadow-md rounded-lg p-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-xl font-semibold">
+                            <i class="fas fa-parking text-blue-600 mr-2"></i>Floor 1 Status
+                        </h2>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Last updated: 11:30 AM</span>
+                            <button class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Main stats with visual indicators -->
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex-1 text-center p-3 border-r">
+                            <p class="text-gray-600 text-sm">Total Slots</p>
                             <p class="text-2xl font-bold">100</p>
+                            <p class="text-xs text-gray-500">Mall Capacity: 100%</p>
                         </div>
-                        <div>
-                            <p class="text-gray-600">Available</p>
+                        <div class="flex-1 text-center p-3 border-r">
+                            <p class="text-gray-600 text-sm">Available</p>
                             <p class="text-2xl font-bold text-green-600">45</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="flex-1 text-center p-3">
+                            <p class="text-gray-600 text-sm">Occupied</p>
+                            <p class="text-2xl font-bold text-red-600">55</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 55%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional parking stats -->
+                    <div class="grid grid-cols-4 gap-3 text-center text-sm border-t pt-3">
+                        <div>
+                            <i class="fas fa-car text-blue-500 mb-1"></i>
+                            <p class="font-semibold">38 Cars</p>
                         </div>
                         <div>
-                            <p class="text-gray-600">Occupied</p>
-                            <p class="text-2xl font-bold text-red-600">55</p>
+                            <i class="fas fa-motorcycle text-green-500 mb-1"></i>
+                            <p class="font-semibold">17 Motorcycles</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-clock text-yellow-500 mb-1"></i>
+                            <p class="font-semibold">5 Reserved</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-star text-purple-500 mb-1"></i>
+                            <p class="font-semibold">4 VIP Parking</p>
                         </div>
                     </div>
                 </div>
@@ -224,6 +280,14 @@
                             <div class="w-4 h-4 bg-yellow-500 mr-2"></div>
                             <span>Reserved</span>
                         </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4" style="background-color: #8A2BE2;" mr-2></div>
+                            <span>VIP</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-blue-500 mr-2"></div>
+                            <span>Motorcycle</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -232,46 +296,91 @@
                     <!-- Top Lane -->
                     <div class="parking-lane">Entrance</div>
 
+                    <!-- VIP Row -->
+                    <div class="parking-slot parking-slot-vip parking-slot-reserved" data-slot="V1">
+                        <span class="parking-slot-label">V1</span>
+                        <i class="fas fa-star vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V2">
+                        <span class="parking-slot-label">V2</span>
+                        <i class="fas fa-star vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-occupied" data-slot="V3">
+                        <span class="parking-slot-label">V3</span>
+                        <i class="fas fa-car vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-occupied" data-slot="V4">
+                        <span class="parking-slot-label">V4</span>
+                        <i class="fas fa-car vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V5">
+                        <span class="parking-slot-label">V5</span>
+                        <i class="fas fa-star vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V6">
+                        <span class="parking-slot-label">V6</span>
+                        <i class="fas fa-star vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-occupied" data-slot="V7">
+                        <span class="parking-slot-label">V7</span>
+                        <i class="fas fa-car vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V8">
+                        <span class="parking-slot-label">V8</span>
+                        <i class="fas fa-star vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V9">
+                        <span class="parking-slot-label">V9</span>
+                        <i class="fas fa-star vehicle-icon"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V10">
+                        <span class="parking-slot-label">V10</span>
+                        <i class="fas fa-star vehicle-icon"></i>
+                    </div>
+
+                    <!-- Lane -->
+                    <div class="parking-lane">VIP Area</div>
+
                     <!-- First Row (Row A) -->
                     <div class="parking-slot parking-slot-available" data-slot="A1">
                         <span class="parking-slot-label">A1</span>
-                        A1
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="A2">
                         <span class="parking-slot-label">A2</span>
-                        A2
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-occupied" data-slot="A3">
                         <span class="parking-slot-label">A3</span>
-                        A3
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-reserved" data-slot="A4">
                         <span class="parking-slot-label">A4</span>
-                        A4
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="A5">
                         <span class="parking-slot-label">A5</span>
-                        A5
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="A6">
                         <span class="parking-slot-label">A6</span>
-                        A6
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-occupied" data-slot="A7">
                         <span class="parking-slot-label">A7</span>
-                        A7
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="A8">
                         <span class="parking-slot-label">A8</span>
-                        A8
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-reserved" data-slot="A9">
                         <span class="parking-slot-label">A9</span>
-                        A9
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="A10">
                         <span class="parking-slot-label">A10</span>
-                        A10
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
 
                     <!-- Lane -->
@@ -280,43 +389,88 @@
                     <!-- Second Row (Row B) -->
                     <div class="parking-slot parking-slot-available" data-slot="B1">
                         <span class="parking-slot-label">B1</span>
-                        B1
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-occupied" data-slot="B2">
                         <span class="parking-slot-label">B2</span>
-                        B2
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="B3">
                         <span class="parking-slot-label">B3</span>
-                        B3
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-reserved" data-slot="B4">
                         <span class="parking-slot-label">B4</span>
-                        B4
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="B5">
                         <span class="parking-slot-label">B5</span>
-                        B5
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-occupied" data-slot="B6">
                         <span class="parking-slot-label">B6</span>
-                        B6
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="B7">
                         <span class="parking-slot-label">B7</span>
-                        B7
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="B8">
                         <span class="parking-slot-label">B8</span>
-                        B8
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-reserved" data-slot="B9">
                         <span class="parking-slot-label">B9</span>
-                        B9
+                        <i class="fas fa-car vehicle-icon"></i>
                     </div>
                     <div class="parking-slot parking-slot-available" data-slot="B10">
                         <span class="parking-slot-label">B10</span>
-                        B10
+                        <i class="fas fa-car vehicle-icon"></i>
+                    </div>
+
+                    <!-- Lane -->
+                    <div class="parking-lane">Motorcycle Area</div>
+
+                    <!-- Motorcycle Row -->
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M1">
+                        <span class="parking-slot-label">M1</span>
+                        <i class="fas fa-motorcycle"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M2">
+                        <span class="parking-slot-label">M2</span>
+                        <i class="fas fa-motorcycle"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-occupied" data-slot="M3">
+                        <span class="parking-slot-label">M3</span>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M4">
+                        <span class="parking-slot-label">M4</span>
+                        <i class="fas fa-motorcycle"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M5">
+                        <span class="parking-slot-label">M5</span>
+                        <i class="fas fa-motorcycle"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-occupied" data-slot="M6">
+                        <span class="parking-slot-label">M6</span>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M7">
+                        <span class="parking-slot-label">M7</span>
+                        <i class="fas fa-motorcycle"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-occupied" data-slot="M8">
+                        <span class="parking-slot-label">M8</span>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M9">
+                        <span class="parking-slot-label">M9</span>
+                        <i class="fas fa-motorcycle"></i>
+                    </div>
+                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M10">
+                        <span class="parking-slot-label">M10</span>
+                        <i class="fas fa-motorcycle"></i>
                     </div>
 
                     <!-- Bottom Lane -->
@@ -333,10 +487,11 @@
                         </div>
                         <div>
                             <label class="block mb-2">Vehicle Type</label>
-                            <select class="w-full border rounded-md px-3 py-2">
-                                <option>Car</option>
-                                <option>SUV</option>
-                                <option>Motorcycle</option>
+                            <select class="w-full border rounded-md px-3 py-2" id="vehicleType">
+                                <option value="car">Car</option>
+                                <option value="suv">SUV</option>
+                                <option value="motorcycle">Motorcycle</option>
+                                <option value="vip">VIP</option>
                             </select>
                         </div>
                         <div>
@@ -357,7 +512,7 @@
             </div>
         
             <!-- Advanced Dashboard Layout -->
-            <div class="grid grid-cols-1 md gap-6 mt-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <!-- Active Parking Sessions -->
                 <div class="bg-white shadow-md rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-4">
@@ -372,9 +527,13 @@
                             <span>Cars</span>
                             <span class="font-bold text-blue-600">95</span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between border-b pb-2">
                             <span>Motorcycles</span>
                             <span class="font-bold text-green-600">63</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>VIP Vehicles</span>
+                            <span class="font-bold text-purple-600">4</span>
                         </div>
                     </div>
                 </div>
@@ -456,7 +615,7 @@
                                 <td class="p-3">Rp 45,000</td>
                                 <td class="p-3">
                                     <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs mr-2">
-                                        <i class="fas fa-print mr-1"></i>Receipt
+                                    <i class="fas fa-print mr-1"></i>Receipt
                                     </button>
                                     <button class="bg-gray-500 text-white px-2 py-1 rounded text-xs">
                                         <i class="fas fa-archive mr-1"></i>Archive
@@ -498,7 +657,7 @@
         
         parkingSlots.forEach(slot => {
             slot.addEventListener('click', function() {
-                // Only allow selection of available slots
+                // Only allow selection of available slots (both VIP and non-VIP)
                 if (this.classList.contains('parking-slot-available')) {
                     // Remove selected class from all slots
                     parkingSlots.forEach(s => s.classList.remove('parking-slot-selected'));
@@ -512,5 +671,22 @@
             });
         });
     </script>
+    <script>
+        // Mengambil semua slot VIP
+        const vipSlots = document.querySelectorAll('.parking-slot-vip');
+
+        vipSlots.forEach(slot => {
+            if (slot.classList.contains('parking-slot-reserved')) {
+                // Jika slot VIP sudah direserve
+                console.log(`Slot ${slot.getAttribute('data-slot')} sudah direserve.`);
+                slot.querySelector('.parking-slot-label').textContent += " (Reserved)"; // Menambahkan label Reserved
+            } else {
+                // Jika slot VIP tersedia
+                console.log(`Slot ${slot.getAttribute('data-slot')} tersedia.`);
+            }
+        });
+    </script>
+
+
 </body>
 </html>
