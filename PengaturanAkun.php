@@ -153,7 +153,7 @@
             </div>
         </div>
     
-        <a href="login.php" class="btn-signout">Sign Out</a>
+        <a href="login.php" class="btn-signout">Log Out</a>
     </div>
     
     <script>
