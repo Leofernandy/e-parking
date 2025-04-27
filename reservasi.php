@@ -7,6 +7,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/styles.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <style>
         
         body {
@@ -113,10 +119,6 @@
             background: #243b53; /* Warna biru gelap saat hover */
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
-
-
-        
-
     </style>
 </head>
 <body>
@@ -172,7 +174,12 @@
                 </form>
             </div>
             <div class="col-md-6">
-                <iframe width="100%" height="400px" frameborder="0" style="border-radius: 10px;" src="assets/img/map.png" allowfullscreen></iframe>
+                <div class="my-4">
+                    <button onclick="updateMarker(3.5833, 98.6756, 'Sun Plaza Medan')" class="btn btn-navy">Sun Plaza</button>
+                    <button onclick="updateMarker(3.5895, 98.6752, 'Centre Point Mall Medan')" class="btn btn-navy">Centre Point</button>
+                    <button onclick="updateMarker(3.5838, 98.6695, 'DeliPark Mall Medan')" class="btn btn-navy">DeliPark</button>
+                </div>
+                <div id="map" style="height: 400px; border-radius: 10px;"></div>
             </div>
         </div>
         <h3 class="mt-4">Pilih Lokasi Parkir</h3>
@@ -213,5 +220,35 @@
             document.getElementById('sidebar').classList.toggle('active');
         });
     </script>
+
+    <script>
+        // Inisialisasi map ke Medan
+        var map = L.map('map').setView([3.5952, 98.6722], 14); // Titik tengah kota Medan
+
+        // Pakai OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Simpan marker global
+        var marker = L.marker([3.5952, 98.6722]).addTo(map)
+            .bindPopup('<b>Medan Kota</b><br>Selamat datang di Medan.')
+            .openPopup();
+
+        // Fungsi update marker
+        function updateMarker(lat, lng, popupText) {
+            if (marker) {
+                map.removeLayer(marker); // Hapus marker lama
+            }
+            marker = L.marker([lat, lng]).addTo(map)
+                .bindPopup('<b>' + popupText + '</b>')
+                .openPopup();
+
+            map.setView([lat, lng], 16); // Zoom lebih dekat ke lokasi mall
+        }
+    </script>
+
+
+    
 </body>
 </html>
