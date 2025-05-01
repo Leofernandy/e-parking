@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservasi - Parkeer</title>
+    <link rel="shortcut icon" href="assets/img/Logobgwhite.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -170,7 +171,7 @@
             <div class="top-up-method">
                 <h5><i class="bi bi-credit-card"></i> ATM</h5>
                 <div class="bank-list">
-                    <a href="konfirmarsi_top_up.php">
+                    <a href="konfirmasi_top_up.php">
                         <div class="bank-item">
                             <img src="assets/img/bca.png" alt="BCA" class="bank-logo"> BCA
                         </div>
@@ -190,7 +191,7 @@
             <div class="top-up-method">
                 <h5><i class="bi bi-phone"></i> Internet / Mobile Banking</h5>
                 <div class="bank-list">
-                    <a href="konfirmarsi_top_up.php">
+                    <a href="konfirmasi_top_up.php">
                         <div class="bank-item">
                             <img src="assets/img/bcam.png" alt="BCA" class="bank-logo"> m-BCA
                         </div>

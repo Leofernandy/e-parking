@@ -21,6 +21,7 @@ if (isset($_SESSION['error'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="shortcut icon" href="assets/img/Logobgwhite.png">
 </head>
 <body class="bg-light" class="admin-page">
     <!-- Header -->
