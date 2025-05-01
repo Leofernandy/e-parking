@@ -1,3 +1,25 @@
+<?php
+session_start();
+try {
+    $pdo = new PDO("mysql:host=localhost;dbname=parkeer_db", "root", "");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Koneksi gagal: " . $e->getMessage());
+}
+
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>
+        alert('Silakan login terlebih dahulu!');
+        window.location.href = 'login.php';
+    </script>";
+    exit();
+}
+$userId = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT nama, email, no_hp, foto_profile FROM users WHERE id = ?");
+$stmt->execute([$userId]);
+$user = $stmt->fetch();
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -28,8 +50,8 @@
             height: 70px;
         }
         .profile-img {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -92,6 +114,44 @@
         }   
     </style>
 </head>
+<!-- Modal Edit Profile -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="update_profile.php" enctype="multipart/form-data" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProfileModalLabel">Edit Akun Saya</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="nama" class="form-label">Nama</label>
+          <input type="text" class="form-control" id="nama" name="nama" value="<?= htmlspecialchars($user['nama']); ?>" required>
+        </div>
+        <div class="mb-3">
+          <label for="no_hp" class="form-label">No HP</label>
+          <input type="text" class="form-control" id="no_hp" name="no_hp" value="<?= htmlspecialchars($user['no_hp']); ?>" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user['email']); ?>" required>
+        </div>
+        <div class="mb-3">
+            <label for="password_baru" class="form-label">Password Baru (opsional)</label>
+            <input type="password" class="form-control" id="password_baru" name="password_baru">
+        </div>
+
+        <div class="mb-3">
+          <label for="foto_profile" class="form-label">Foto Profile (optional)</label>
+          <input type="file" class="form-control" id="foto_profile" name="foto_profile">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <body>
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-header">
@@ -103,8 +163,8 @@
             </a>
         </div>
         <div class="d-flex align-items-center">
-            <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
-            <span class="fw-bold text-navy">Fedor Reyes</span>
+            <img src="<?php echo $_SESSION['foto_profile']; ?>" alt="Foto Profil" class="profile-img me-2">
+            <span class="fw-bold text-navy"><?php echo htmlspecialchars($_SESSION['user_nama']); ?></span>
         </div>
     </nav>
 
@@ -120,17 +180,20 @@
     <!-- Content -->
     <div class="container">
         <div class="header text-center fw-bold fs-4 mb-3 text-navy">Akun Saya</div>
-        <div class="profile-section d-flex align-items-center ml-2">
-        <img src="assets/img/profilepic.jpg" alt="Foto Profil" 
-            class="rounded-circle mx-4" width="90" height="90" 
-            style="object-fit: cover; aspect-ratio: 1/1;">
+        <div class="profile-section d-flex align-items-center ml-2 p-15">
+        <img src="<?= $user['foto_profile'] ? $user['foto_profile'] : 'assets/img/profilepic.jpg'; ?>" 
+        alt="Foto Profil" class="profile-img me-4" style="width: 80px; height: 80px; margin-left: 20px; object-fit: cover; border-radius: 50%;">
+
 
             <div class="ms-2">
-                <p class="fw-bold fs-5">Fedor Reyes</p>
-                <p class="text-muted fs-8">+62 812 3456 7890</p>
-                <p class="text-muted fs-8">fedor@example.com</p>
+                <p class="fw-bold fs-5"><?= htmlspecialchars($user['nama']); ?></p>
+                <p class="text-muted fs-8"><?= htmlspecialchars($user['no_hp']); ?></p>
+                <p class="text-muted fs-8"><?= htmlspecialchars($user['email']); ?></p>
             </div>
-            <a href="#" class="ms-auto text-navy fs-4"><i class="bi bi-pencil-square"></i></a>
+            <a href="#" class="ms-auto text-navy fs-4" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+    <i class="bi bi-pencil-square"></i>
+</a>
+
         </div>
         
         <div class="menu-section mt-4">
@@ -153,8 +216,11 @@
             </div>
         </div>
     
-        <a href="login.php" class="btn-signout">Log Out</a>
+        <a href="logout.php" class="btn-signout">Sign Out</a>
+
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     
     <script>
         document.getElementById('menu-toggle').addEventListener('click', function() {
