@@ -26,6 +26,14 @@
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card shadow-lg p-4 rounded-4" style="width: 100%; max-width: 400px;">
             <h2 class="text-center mb-4 text-navy">Masuk ke Parkeer</h2>
+            <?php
+            session_start();
+            if (isset($_SESSION['error'])) {
+                echo '<div class="alert alert-danger text-center">' . $_SESSION['error'] . '</div>';
+                unset($_SESSION['error']);
+            }
+            ?>
+
             <form action="login_process.php" method="POST">
                 <div class="form-group mb-3">
                     <i class="bi bi-envelope"></i>
@@ -35,7 +43,7 @@
                     <i class="bi bi-lock"></i>
                     <input type="password" name="password" class="form-control" placeholder="Kata Sandi" required>
                 </div>
-                <a href="reservasi.php" class="btn btn-navy w-100">Masuk</a>
+                <button type="submit" class="btn btn-navy w-100">Masuk</button>
 
 
                 <div class="separator">atau</div>
@@ -53,3 +61,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
