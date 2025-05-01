@@ -1,3 +1,98 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>
+        alert('Silakan login terlebih dahulu!');
+        window.location.href = 'login.php';
+    </script>";
+    exit();
+}
+
+// Koneksi database
+try {
+    $pdo = new PDO("mysql:host=localhost;dbname=parkeer_db", "root", "");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Koneksi gagal: " . $e->getMessage());
+}
+
+// =====================
+// Handle Tambah Kendaraan
+if (isset($_POST['add_vehicle'])) {
+    $plate = $_POST['plate'];
+    $brand = $_POST['brand'];
+    $color = $_POST['color'];
+
+    $stmt = $pdo->prepare("INSERT INTO vehicles (user_id, plate, brand, color) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$_SESSION['user_id'], $plate, $brand, $color]);
+
+    echo "<script>
+        alert('Kendaraan berhasil ditambahkan!');
+        window.location.href = 'KelolaKendaraan.php';
+    </script>";
+    exit();
+}
+
+// =====================
+// Handle Edit Kendaraan
+if (isset($_POST['edit_vehicle'])) {
+    $vehicle_id = $_POST['vehicle_id'];
+    $plate = $_POST['plate'];
+    $brand = $_POST['brand'];
+    $color = $_POST['color'];
+
+    $stmt = $pdo->prepare("UPDATE vehicles SET plate = ?, brand = ?, color = ? WHERE id = ? AND user_id = ?");
+    $stmt->execute([$plate, $brand, $color, $vehicle_id, $_SESSION['user_id']]);
+
+    echo "<script>
+        alert('Kendaraan berhasil diupdate!');
+        window.location.href = 'KelolaKendaraan.php';
+    </script>";
+    exit();
+}
+
+// =====================
+// Handle Hapus Kendaraan
+if (isset($_POST['delete_vehicle'])) {
+    $vehicle_id = $_POST['vehicle_id'];
+
+    $stmt = $pdo->prepare("DELETE FROM vehicles WHERE id = ? AND user_id = ?");
+    $stmt->execute([$vehicle_id, $_SESSION['user_id']]);
+
+    echo "<script>
+        alert('Kendaraan berhasil dihapus!');
+        window.location.href = 'KelolaKendaraan.php';
+    </script>";
+    exit();
+}
+
+// =====================
+// Handle Set Kendaraan Utama
+if (isset($_POST['set_primary'])) {
+    $vehicle_id = $_POST['vehicle_id'];
+
+    // Pertama, reset semua kendaraan user jadi bukan utama
+    $stmt = $pdo->prepare("UPDATE vehicles SET is_primary = 0 WHERE user_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+
+    // Lalu set kendaraan ini jadi utama
+    $stmt = $pdo->prepare("UPDATE vehicles SET is_primary = 1 WHERE id = ? AND user_id = ?");
+    $stmt->execute([$vehicle_id, $_SESSION['user_id']]);
+
+    $_SESSION['success'] = "Kendaraan berhasil dijadikan utama!";
+    header("Location: KelolaKendaraan.php");
+    exit();
+}
+
+
+// Ambil kendaraan user
+$stmt = $pdo->prepare("SELECT * FROM vehicles WHERE user_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$vehicles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -140,6 +235,23 @@
             color:white;
 
         }
+
+
+        .primary-btn {
+            background: #FFD700; /* Warna kuning emas */
+            color: #2E4A5E; /* Navy, sama kayak teks di status */
+            border: none;
+            padding: 15px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin:10px;
+        }
+        .primary-btn:hover {
+            background: #e6c200; /* Sedikit lebih gelap saat hover */
+        }
+
     </style>
 </head>
 <body>
@@ -153,8 +265,8 @@
             </a>
         </div>
         <div class="d-flex align-items-center">
-            <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
-            <span class="fw-bold text-navy">Fedor Reyes</span>
+            <img src="<?php echo $_SESSION['foto_profile']; ?>" alt="Foto Profil" class="profile-img me-2">
+            <span class="fw-bold text-navy"><?php echo htmlspecialchars($_SESSION['user_nama']); ?></span>
         </div>
     </nav>
     
@@ -167,70 +279,98 @@
         <a href="bantuan.php">Notifikasi</a>
     </div>
     <div class="vehicle-container">
-        <div class="header text-center fw-bold fs-4 mb-3 text-navy">Kendaraan Saya</div>
-        
+    <div class="header text-center fw-bold fs-4 mb-3 text-navy">Kendaraan Saya</div>
+
+    <?php foreach ($vehicles as $vehicle): ?>
         <section class="vehicle-card">
-            <div class="plate">BK 1823 ABR</div>
+            <div class="plate"><?php echo htmlspecialchars($vehicle['plate']); ?></div>
             <div class="details">
-                <h2>Toyota Agya</h2>
-                <p>Putih <span class="status">⭐ Utama</span></p>
-                <p class="warning">⚠ Lengkapi data kendaraan anda</p>
+                <h2><?php echo htmlspecialchars($vehicle['brand']); ?></h2>
+                <p><?php echo htmlspecialchars($vehicle['color']); ?>
+                    <?php if ($vehicle['is_primary']): ?>
+                        <span class="status">⭐ Utama</span>
+                    <?php endif; ?>
+                </p>
             </div>
-            <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editVehicleModal">UBAH</button>
+            <?php if (!$vehicle['is_primary']): ?>
+    <form method="POST" action="KelolaKendaraan.php" style="display:inline;">
+        <input type="hidden" name="vehicle_id" value="<?php echo $vehicle['id']; ?>">
+        <button type="submit" name="set_primary" class="primary-btn ms-2">JADIKAN UTAMA</button>
+    </form>
+<?php endif; ?>
+
+            <button class="edit-btn" 
+    data-bs-toggle="modal" 
+    data-bs-target="#editVehicleModal"
+    data-id="<?php echo $vehicle['id']; ?>"
+    data-plate="<?php echo htmlspecialchars($vehicle['plate']); ?>"
+    data-brand="<?php echo htmlspecialchars($vehicle['brand']); ?>"
+    data-color="<?php echo htmlspecialchars($vehicle['color']); ?>"
+>UBAH</button>
+
+
+
+            <form method="POST" action="KelolaKendaraan.php" onsubmit="return confirm('Yakin hapus kendaraan ini?')">
+    <input type="hidden" name="vehicle_id" value="<?php echo $vehicle['id']; ?>">
+    <button type="submit" name="delete_vehicle" class="edit-btn btn-danger ms-2" style="background:#D9534F;">HAPUS</button>
+
+</form>
+
         </section>
-        <section class="vehicle-card">
-            <div class="plate">BK 1257 AEH</div>
-            <div class="details">
-                <h2>Mitsubishi Expander</h2>
-                <p>Hitam</p>
-                <p class="warning">⚠ Lengkapi data kendaraan anda</p>
-            </div>
-            <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editVehicleModal">UBAH</button>
-        </section>
-        <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addVehicleModal">Tambah Kendaraan</button>
-    </div>
+    <?php endforeach; ?>
+
+    <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addVehicleModal">Tambah Kendaraan</button>
+</div>
+
 
     <!-- Modal Tambah Kendaraan -->
-    <div class="modal fade" id="addVehicleModal" tabindex="-1" aria-labelledby="addVehicleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+<div class="modal fade" id="addVehicleModal" tabindex="-1" aria-labelledby="addVehicleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="KelolaKendaraan.php">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addVehicleModalLabel">Tambah Kendaraan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control mb-2" placeholder="Nomor Plat Kendaraan">
-                    <input type="text" class="form-control mb-2" placeholder="Merek Kendaraan">
-                    <input type="text" class="form-control mb-2" placeholder="Warna Kendaraan">
+                    <input type="text" name="plate" class="form-control mb-2" placeholder="Nomor Plat Kendaraan" required>
+                    <input type="text" name="brand" class="form-control mb-2" placeholder="Merek Kendaraan" required>
+                    <input type="text" name="color" class="form-control mb-2" placeholder="Warna Kendaraan" required>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-navy">Simpan</button>
+                    <button type="submit" name="add_vehicle" class="btn btn-navy">Simpan</button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
+</div>
 
-    <!-- Modal Edit Kendaraan -->
-    <div class="modal fade" id="editVehicleModal" tabindex="-1" aria-labelledby="editVehicleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+
+<!-- Modal Edit Kendaraan -->
+<div class="modal fade" id="editVehicleModal" tabindex="-1" aria-labelledby="editVehicleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="KelolaKendaraan.php">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editVehicleModalLabel">Edit Kendaraan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control mb-2" value="BK 1223 AEJ">
-                    <input type="text" class="form-control mb-2" value="Toyota Agya">
-                    <input type="text" class="form-control mb-2" value="Putih">
+                    <input type="hidden" name="vehicle_id" id="edit_vehicle_id">
+                    <input type="text" name="plate" id="edit_plate" class="form-control mb-2" placeholder="Nomor Plat Kendaraan" required>
+                    <input type="text" name="brand" id="edit_brand" class="form-control mb-2" placeholder="Merek Kendaraan" required>
+                    <input type="text" name="color" id="edit_color" class="form-control mb-2" placeholder="Warna Kendaraan" required>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary">Simpan Perubahan</button>
+                    <button type="submit" name="edit_vehicle" class="btn btn-primary">Simpan Perubahan</button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
+</div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -240,43 +380,18 @@
     </script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const addVehicleButton = document.querySelector("#addVehicleModal .btn-navy");
-        const vehicleContainer = document.querySelector(".vehicle-container");
-        
-        addVehicleButton.addEventListener("click", function() {
-            const plateInput = document.querySelector("#addVehicleModal input:nth-child(1)").value;
-            const brandInput = document.querySelector("#addVehicleModal input:nth-child(2)").value;
-            const colorInput = document.querySelector("#addVehicleModal input:nth-child(3)").value;
-
-            if (plateInput && brandInput && colorInput) {
-                const vehicleCard = document.createElement("section");
-                vehicleCard.classList.add("vehicle-card");
-                vehicleCard.innerHTML = `
-                    <div class="plate">${plateInput}</div>
-                    <div class="details">
-                        <h2>${brandInput}</h2>
-                        <p>${colorInput}</p>
-                        <p class="warning">⚠ Lengkapi data kendaraan anda</p>
-                    </div>
-                    <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editVehicleModal">UBAH</button>
-                `;
-
-                vehicleContainer.insertBefore(vehicleCard, document.querySelector(".add-btn"));
-
-                // Reset input fields
-                document.querySelector("#addVehicleModal input:nth-child(1)").value = "";
-                document.querySelector("#addVehicleModal input:nth-child(2)").value = "";
-                document.querySelector("#addVehicleModal input:nth-child(3)").value = "";
-
-                // Tutup modal setelah menambahkan kendaraan
-                var modal = bootstrap.Modal.getInstance(document.getElementById('addVehicleModal'));
-                modal.hide();
-            } else {
-                alert("Harap isi semua kolom kendaraan!");
-            }
+        document.querySelectorAll('.edit-btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                document.getElementById('edit_plate').value = this.getAttribute('data-plate');
+                document.getElementById('edit_brand').value = this.getAttribute('data-brand');
+                document.getElementById('edit_color').value = this.getAttribute('data-color');
+                document.getElementById('edit_vehicle_id').value = this.getAttribute('data-id');
+            });
         });
+
     });
-    </script>
+</script>
+
 
 </body>
 </html>
