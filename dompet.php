@@ -1,3 +1,92 @@
+<?php
+session_start();
+require 'config.php';
+
+$userId = $_SESSION['user_id'];
+
+try {
+    $stmt = $pdo->prepare("SELECT saldo FROM users WHERE id = :user_id");
+    $stmt->execute([':user_id' => $userId]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $saldo = $user['saldo'];
+    } else {
+        $saldo = 0; // Kalau user tidak ditemukan
+    }
+} catch (Exception $e) {
+    $saldo = 0; // Kalau error
+}
+
+// Ambil riwayat top-up pengguna
+$stmt = $pdo->prepare("SELECT * FROM topup_history WHERE user_id = :user_id ORDER BY created_at DESC");
+$stmt->execute(['user_id' => $user_id]);
+$topup_history = $stmt->fetchAll();
+
+// Tampilkan riwayat transaksi
+foreach ($topup_history as $topup) {
+    echo "Tanggal: " . $topup['created_at'] . "<br>";
+    echo "Jumlah: " . $topup['amount'] . "<br>";
+    echo "Metode: " . $topup['method'] . "<br><hr>";
+}
+
+
+// Ambil Top Up History
+try {
+    $stmtTopup = $pdo->prepare("SELECT amount, created_at FROM topup_history WHERE user_id = :user_id ORDER BY created_at DESC");
+    $stmtTopup->execute([':user_id' => $userId]);
+    $topupHistory = $stmtTopup->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $topupHistory = [];
+}
+
+// Ambil Transaction History
+try {
+    $stmtTransaction = $pdo->prepare("SELECT amount, keterangan, created_at FROM transaction_history WHERE user_id = :user_id ORDER BY created_at DESC");
+    $stmtTransaction->execute([':user_id' => $userId]);
+    $transactionHistory = $stmtTransaction->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $transactionHistory = [];
+}
+
+// Gabungkan data dan tandai jenisnya
+$transactions = [];
+
+// Data Topup
+foreach ($topupHistory as $topup) {
+    $transactions[] = [
+        'type' => 'Top Up',
+        'amount' => $topup['amount'],
+        'description' => 'Top Up Saldo',
+        'created_at' => $topup['created_at']
+    ];
+}
+
+// Data Pembayaran
+foreach ($transactionHistory as $transaction) {
+    $transactions[] = [
+        'type' => 'Pembayaran',
+        'amount' => $transaction['amount'],
+        'description' => $transaction['keterangan'],
+        'created_at' => $transaction['created_at']
+    ];
+}
+
+// Urutkan berdasarkan tanggal terbaru
+usort($transactions, function($a, $b) {
+    return strtotime($b['created_at']) - strtotime($a['created_at']);
+});
+
+
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>
+        alert('Silakan login terlebih dahulu!');
+        window.location.href = 'login.php';
+    </script>";
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -231,8 +320,8 @@
             </a>
         </div>
         <div class="d-flex align-items-center">
-            <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
-            <span class="fw-bold text-navy">Fedor Reyes</span>
+            <img src="<?php echo $_SESSION['foto_profile']; ?>" alt="Foto Profil" class="profile-img me-2">
+            <span class="fw-bold text-navy"><?php echo htmlspecialchars($_SESSION['user_nama']); ?></span>
         </div>
     </nav>
     
@@ -250,7 +339,7 @@
         <div class="wallet-section">
             <div class="wallet-header">
                 <span>Saldo</span>
-                <div class="wallet-balance">Rp <span id="saldo">150.000</span></div>
+                <div class="wallet-balance">Rp <span id="saldo"><?php echo number_format($saldo, 0, ',', '.'); ?></span></div>
                 <a class="btn-topup" href="topup.php">Top Up</a>
             </div>
             <div class="promo">
@@ -273,32 +362,27 @@
                 <option value="30 hari">30 Hari Terakhir</option>
             </select><br>
             <div class="transaction-list">
-                <div class="transaction-item">
-                    <span>Pembayaran</span>
-                    <span id = "negative">- Rp 10.000</span>
-                    <span class="time">12 Okt 2024, 12:00 WIB</span>
-                </div>
-                <div class="transaction-item">
-                    <span>Top Up</span>
-                    <span id = "positive">+ Rp 50.000</span>
-                    <span class="time">1 Okt 2024, 21:08 WIB</span>
-                </div>
-                <div class="transaction-item">
-                    <span>Pembayaran</span>
-                    <span id="negative">- Rp 20.000</span>
-                    <span class="time">21 Sep 2024, 17:53 WIB</span>
-                </div>
-                <div class="transaction-item">
-                    <span>Pembayaran</span>
-                    <span id="negative">- Rp 15.000</span>
-                    <span class="time">16 Sep 2024, 20:10 WIB</span>
-                </div>
-                <div class="transaction-item">
-                    <span>Top Up</span>
-                    <span id="positive">+ Rp 100.000</span>
-                    <span class="time">7 Sep 2024, 14:44 WIB</span>
-                </div>
+    <?php if (empty($transactions)): ?>
+        <div class="transaction-item">
+            <span>Tidak ada transaksi.</span>
+        </div>
+    <?php else: ?>
+        <?php foreach ($transactions as $t): ?>
+            <div class="transaction-item">
+                <span><?php echo htmlspecialchars($t['description']); ?></span>
+                <?php if ($t['type'] == 'Top Up'): ?>
+                    <span id="positive">+ Rp <?php echo number_format($t['amount'], 0, ',', '.'); ?></span>
+                <?php else: ?>
+                    <span id="negative">- Rp <?php echo number_format($t['amount'], 0, ',', '.'); ?></span>
+                <?php endif; ?>
+                <span class="time">
+                    <?php echo date('d M Y, H:i', strtotime($t['created_at'])); ?> WIB
+                </span>
             </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+
         </div>
     </div>
 
