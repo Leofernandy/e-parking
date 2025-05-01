@@ -1,3 +1,41 @@
+<?php
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>
+        alert('Silakan login terlebih dahulu!');
+        window.location.href = 'login.php';
+    </script>";
+    exit();
+}
+
+// Koneksi ke database menggunakan PDO
+require_once 'config.php'; // Sesuaikan dengan file koneksi database yang kamu gunakan
+
+// Ambil data transaksi pending dari database
+$user_id = $_SESSION['user_id'];
+$query = "SELECT * FROM reservations WHERE user_id = :user_id AND status = 'pending' ORDER BY created_at DESC LIMIT 1";
+
+$stmt = $pdo->prepare($query);
+
+// Bind parameter
+$stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+
+// Eksekusi query
+$stmt->execute();
+
+// Ambil hasil query
+$transaction = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($transaction) {
+    $waktu_keluar = $transaction['waktu_keluar']; // Asumsikan kolom exit_time berisi waktu keluar yang ditentukan
+} else {
+    $waktu_keluar = null;
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -118,8 +156,8 @@
             </a>
         </div>
         <div class="d-flex align-items-center">
-            <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
-            <span class="fw-bold text-navy">Fedor Reyes</span>
+            <img src="<?php echo $_SESSION['foto_profile']; ?>" alt="Foto Profil" class="profile-img me-2">
+            <span class="fw-bold text-navy"><?php echo htmlspecialchars($_SESSION['user_nama']); ?></span>
         </div>
     </nav>
     
@@ -139,34 +177,25 @@
 
         <div class="container-fluid mt-5 px-3">
             <h2 class="text-navy text-center fw-bold my-5 pt-3">Notifikasi</h2>
+            <?php if ($transaction): ?>
             <div class="row justify-content-center pt-3">
                 <div class="col-12">
                     <div class="card card-custom card-danger mb-2">
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center pt-2">
                             <i class="bi bi-exclamation-triangle-fill fs-3 text-danger me-3"></i>
                             <div>
                                 <h5 class="fw-bold text-danger">Perhatian!</h5>
-                                <p>Waktu parkir Anda tersisa <strong>15 menit</strong>. Segera lakukan perpanjangan!</p>
+                                <p>Reservasi anda akan berakhir pada <strong ><?php echo $waktu_keluar; ?></strong>.</p>
                             </div>
                         </div>
-                        <span class="timer text-danger" id="sisaWaktu">14:23:02</span>
+                        <span class="timer text-danger" id="sisaWaktu">00.00.00</span>
                     </div>
                 </div>
-                <div class="col-12">
-                    <div class="card card-custom card-success mt-2">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-gift-fill fs-3 text-success me-3"></i>
-                            <div>
-                                <h5 class="fw-bold text-success">Gratis Parkir!</h5>
-                                <p>Tempuh 10 jam waktu parkir dan mendapatkan 1 jam parkir gratis!</p>
-                            </div>
-                        </div>
-                        <span class="timer text-success" id="waktuReward">02:30:15</span>
-                    </div>
                 </div>
             </div>
+            <?php endif; ?>
             <div class="text-center mt-4">
-                <a href="reservasi.php" class="btn btn-navy"><i class="bi bi-arrow-left"></i> Kembali ke Dashboard</a>
+                <a href="reservasi.php" class="btn btn-navy"><i class="bi bi-arrow-left"></i> Kembali</a>
             </div>
         </div>
     </div>
@@ -180,37 +209,33 @@
         });
     </script>
     <script>
-        function updateTimers() {
-            let sisaWaktu = document.getElementById("sisaWaktu");
-            let waktuReward = document.getElementById("waktuReward");
-            
-            let now = new Date();
-            let parkirHabis = new Date(now.getTime() + 14 * 60 * 1000 + 23 * 1000);
-            let rewardTercapai = new Date(now.getTime() + 2 * 60 * 60 * 1000 + 30 * 60 * 1000 + 15 * 1000);
+    document.addEventListener('DOMContentLoaded', function () {
+        let sisaWaktu = document.getElementById("sisaWaktu");
+        
+        <?php if ($waktu_keluar): ?>
+            // Menghitung waktu countdown berdasarkan waktu keluar yang didapat dari database
+            let waktuKeluar = new Date("<?php echo $waktu_keluar; ?>").getTime();
             
             function updateCountdown() {
-                let now = new Date();
-                let sisaMs = parkirHabis - now;
-                let rewardMs = rewardTercapai - now;
-                
+                let now = new Date().getTime();
+                let sisaMs = waktuKeluar - now;
+
                 if (sisaMs > 0) {
                     let sisaJam = Math.floor(sisaMs / (1000 * 60 * 60));
                     let sisaMenit = Math.floor((sisaMs % (1000 * 60 * 60)) / (1000 * 60));
                     let sisaDetik = Math.floor((sisaMs % (1000 * 60)) / 1000);
                     sisaWaktu.innerText = `${sisaJam.toString().padStart(2, '0')}:${sisaMenit.toString().padStart(2, '0')}:${sisaDetik.toString().padStart(2, '0')}`;
-                }
-                
-                if (rewardMs > 0) {
-                    let rewardJam = Math.floor(rewardMs / (1000 * 60 * 60));
-                    let rewardMenit = Math.floor((rewardMs % (1000 * 60 * 60)) / (1000 * 60));
-                    let rewardDetik = Math.floor((rewardMs % (1000 * 60)) / 1000);
-                    waktuReward.innerText = `${rewardJam.toString().padStart(2, '0')}:${rewardMenit.toString().padStart(2, '0')}:${rewardDetik.toString().padStart(2, '0')}`;
+                } else {
+                    sisaWaktu.innerText = "Waktu habis!";
                 }
             }
-            
+
             setInterval(updateCountdown, 1000);
-        }
-        updateTimers();
-    </script>
+        <?php else: ?>
+            sisaWaktu.innerText = "Tidak ada transaksi pending";
+        <?php endif; ?>
+    });
+</script>
+
 </body>
 </html>
