@@ -1,10 +1,140 @@
+<?php
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require 'config.php';
+
+if (!isset($_SESSION['admin_id'])) {
+    echo "<script>
+        alert('Silakan login terlebih dahulu!');
+        window.location.href = 'admin_login.php';
+    </script>";
+    exit();
+}
+
+$mall_name = '';
+
+if (isset($_SESSION['mall_id'])) {
+    $mall_id = $_SESSION['mall_id'];
+    $stmt = $pdo->prepare("SELECT nama_mall , total_slot FROM malls WHERE id = :id");
+    $stmt->execute([':id' => $mall_id]);
+    $mall = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($mall) {
+        $mall_name = $mall['nama_mall'];
+        $total_slot = $mall['total_slot'];
+    }
+}
+
+$stmt = $pdo->prepare("
+    SELECT mall_id,
+           SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) AS available_slots,
+           SUM(CASE WHEN status = 'booked' THEN 1 ELSE 0 END) AS booked_slots
+    FROM parking_slots
+    GROUP BY mall_id
+");
+$stmt->execute();
+$slotData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$availableSlotsArray = [];
+$bookedSlotsArray = [];
+foreach ($slotData as $slot) {
+    $availableSlotsArray[$slot['mall_id']] = $slot['available_slots'];
+    $bookedSlotsArray[$slot['mall_id']] = $slot['booked_slots'];
+}
+
+$available = isset($availableSlotsArray[$_SESSION['mall_id']]) ? $availableSlotsArray[$_SESSION['mall_id']] : 0;
+$percentageAvailable = $total_slot > 0 ? ($available / $total_slot) * 100 : 0;
+
+$booked = isset($bookedSlotsArray[$_SESSION['mall_id']]) ? $bookedSlotsArray[$_SESSION['mall_id']] : 0;
+$percentageBooked = $total_slot > 0 ? ($booked / $total_slot) * 100 : 0;
+
+
+$stmt = $pdo->prepare("SELECT * FROM reservations WHERE mall_id = :mall_id ORDER BY created_at DESC");
+$stmt->bindParam(':mall_id', $mall_id, PDO::PARAM_INT);
+$stmt->execute();
+$reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+foreach ($reservations as &$reservation) {
+    // Ambil data slot parkir
+    $stmt = $pdo->prepare("SELECT slot_code FROM parking_slots WHERE id = :parking_slot_id");
+    $stmt->execute(['parking_slot_id' => $reservation['parking_slot_id']]);
+    $slot = $stmt->fetch();
+    $reservation['slot_code'] = $slot ? $slot['slot_code'] : 'Tidak ditemukan';
+
+    // Ambil data nomor kendaraan
+    $stmt = $pdo->prepare("SELECT plate FROM vehicles WHERE id = :vehicle_id");
+    $stmt->execute(['vehicle_id' => $reservation['vehicle_id']]);
+    $vehicle = $stmt->fetch();
+    $reservation['plate'] = $vehicle ? $vehicle['plate'] : 'Tidak ditemukan';
+}
+
+// Proses pembatalan reservasi
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_reservation'])) {
+    $reservation_id = $_POST['cancel_reservation'];
+
+    // Ambil data reservasi untuk pembatalan
+    $stmt = $pdo->prepare("SELECT * FROM reservations WHERE id = :reservation_id");
+    $stmt->execute(['reservation_id' => $reservation_id]);
+
+    $reservation = $stmt->fetch();
+
+    if ($reservation) {
+
+        // Ubah status slot parkir menjadi available
+        $stmt = $pdo->prepare("UPDATE parking_slots SET status = 'available' WHERE id = :parking_slot_id");
+        $stmt->execute(['parking_slot_id' => $reservation['parking_slot_id']]);
+
+        // Update status reservasi menjadi canceled
+        $stmt = $pdo->prepare("UPDATE reservations SET status = 'cancelled' WHERE id = :reservation_id");
+        $stmt->execute(['reservation_id' => $reservation_id]);
+
+        echo "<script>alert('Reservasi berhasil dibatalkan!'); window.location.href='dashboard.php';</script>";
+        exit();
+    } else {
+        echo "<script>alert('Reservasi tidak ditemukan!'); window.location.href='dashboard.php';</script>";
+        exit();
+    }
+}
+
+// Proses perubahan status dari 'pending' ke 'completed'
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_reservation'])) {
+    $reservation_id = $_POST['complete_reservation'];
+
+    // Ambil data reservasi berdasarkan id
+    $stmt = $pdo->prepare("SELECT * FROM reservations WHERE id = :reservation_id");
+    $stmt->execute(['reservation_id' => $reservation_id]);
+
+    $reservation = $stmt->fetch();
+
+    if ($reservation) {
+        // Update status reservasi menjadi 'completed'
+        $stmt = $pdo->prepare("UPDATE reservations SET status = 'completed' WHERE id = :reservation_id");
+        $stmt->execute(['reservation_id' => $reservation_id]);
+        // Ubah status slot parkir menjadi available
+        $stmt = $pdo->prepare("UPDATE parking_slots SET status = 'available' WHERE id = :parking_slot_id");
+        $stmt->execute(['parking_slot_id' => $reservation['parking_slot_id']]);
+        
+
+        echo "<script>alert('Reservasi berhasil diselesaikan!'); window.location.href='dashboard.php';</script>";
+        exit();
+    } else {
+        echo "<script>alert('Reservasi tidak ditemukan!'); window.location.href='dashboard.php';</script>";
+        exit();
+    }
+}
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="shortcut icon" href="assets/img/Logobgwhite.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parking Management System - Comprehensive Dashboard</title>
+    <title>Admin - Parkeer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -93,50 +223,10 @@
             gap: 10px;
             perspective: 1000px;
         }
-        .parking-slot {
-            aspect-ratio: 2/1;
-            border: 2px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            position: relative;
-            transform-style: preserve-3d;
-        }
-        .parking-slot-available {
-            background-color: #e6f3e6;
-            border-color: #4CAF50;
-            color: #4CAF50;
-        }
-        .parking-slot-occupied {
-            background-color: #f8d7da;
-            border-color: #DC3545;
-            color: #DC3545;
-            cursor: not-allowed;
-        }
-        .parking-slot-reserved {
-            background-color: #fff3cd;
-            border-color: #FFC107;
-            color: #FFC107;
-        }
-        .parking-slot-vip {
-            background-color: #f0e6ff;
-            border-color: #8A2BE2;
-            color: #8A2BE2;
-        }
-        .parking-slot-motorcycle {
-            aspect-ratio: 1/1;
-            background-color: #e6f3ff;
-            border-color: #007BFF;
-            color: #007BFF;
-        }
-        .parking-slot-selected {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0,123,255,0.5);
-            border-color: #007BFF;
-            z-index: 10;
-        }
+        .parking-slot { height: 280px; border: 4px solid #2E4A5E; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; margin: 10px; border-right: none; border-radius: 5px; }
+        .available { background-color: #243b53; color: white; }
+        .occupied { background-color: rgb(255, 108, 108); color: white; cursor: not-allowed; }
+        .selected { background-color: rgb(27, 105, 239) ; color: white; }
         .parking-slot-label {
             position: absolute;
             top: 5px;
@@ -163,6 +253,20 @@
             font-size: 1.2rem;
             margin-top: 2px;
         }
+        .status-complete {
+    background-color: #d4edda; /* hijau muda */
+        }
+        .status-pending {
+            background-color: #fff3cd; /* kuning muda */
+        }
+        .status-cancel {
+            background-color: #f8d7da; /* merah muda */
+        }
+        /* Style for the dropdown menu */
+        .dropdown-menu {
+        min-width: 150px;
+        }
+
 
         
         
@@ -178,8 +282,14 @@
             </a>
         </div>
         <div class="d-flex align-items-center">
-            <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
-            <span class="fw-bold text-navy">Admin</span>
+        <span class="fw-bold text-navy" id="admin-name"><?php echo htmlspecialchars($_SESSION['admin_nama']); ?></span>
+        <div class="dropdown ml-3">
+            <button class="btn btn-link text-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="admin_logout.php">Sign Out</a></li>
+            </ul>
         </div>
     </nav>
     
@@ -190,7 +300,7 @@
             <header class="flex justify-between items-center mb-8">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-800">Parking Management System</h1>
-                    <p class="text-gray-600">Centre Point Mall</p>
+                    <p class="text-gray-600"><?php echo htmlspecialchars($mall_name); ?></p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative">
@@ -200,11 +310,11 @@
                 </div>
             </header>
             
-            <!-- Floor Overview - Enhanced version -->
+
             <div class="mb-8">
-                <div class="bg-white shadow-md rounded-lg p-5">
+                <div class="bg-white shadow-md rounded-lg p-3">
                     <div class="flex justify-between items-center mb-3">
-                        <h2 class="text-xl font-semibold">
+                        <h2 class="text-2xl font-semibold">
                             <i class="fas fa-parking text-blue-600 mr-2"></i>Floor 1 Status
                         </h2>
                         <div class="flex items-center space-x-2">
@@ -219,44 +329,26 @@
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex-1 text-center p-3 border-r">
                             <p class="text-gray-600 text-sm">Total Slots</p>
-                            <p class="text-2xl font-bold">100</p>
-                            <p class="text-xs text-gray-500">Mall Capacity: 100%</p>
+                            <p class="text-2xl font-bold"><?php echo htmlspecialchars($total_slot); ?></p>
+                            
                         </div>
                         <div class="flex-1 text-center p-3 border-r">
                             <p class="text-gray-600 text-sm">Available</p>
-                            <p class="text-2xl font-bold text-green-600">45</p>
+                            <p class="text-2xl font-bold text-green-600"><?php echo isset($availableSlotsArray[$_SESSION['mall_id']]) ? $availableSlotsArray[$_SESSION['mall_id']] : 0; ?></p>
                             <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                <div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div>
+                            <div class="bg-green-500 h-2 rounded-full" style="width: <?php echo $percentageAvailable; ?>%"></div>
                             </div>
                         </div>
                         <div class="flex-1 text-center p-3">
-                            <p class="text-gray-600 text-sm">Occupied</p>
-                            <p class="text-2xl font-bold text-red-600">55</p>
+                            <p class="text-gray-600 text-sm">Booked</p>
+                            <p class="text-2xl font-bold text-red-600"><?php echo isset($bookedSlotsArray[$_SESSION['mall_id']]) ? $bookedSlotsArray[$_SESSION['mall_id']] : 0; ?></p>
                             <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                <div class="bg-red-500 h-2 rounded-full" style="width: 55%"></div>
+                            <div class="bg-red-500 h-2 rounded-full" style="width: <?php echo $percentageBooked; ?>%"></div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Additional parking stats -->
-                    <div class="grid grid-cols-4 gap-3 text-center text-sm border-t pt-3">
-                        <div>
-                            <i class="fas fa-car text-blue-500 mb-1"></i>
-                            <p class="font-semibold">38 Cars</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-motorcycle text-green-500 mb-1"></i>
-                            <p class="font-semibold">17 Motorcycles</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-clock text-yellow-500 mb-1"></i>
-                            <p class="font-semibold">5 Reserved</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-star text-purple-500 mb-1"></i>
-                            <p class="font-semibold">4 VIP Parking</p>
-                        </div>
-                    </div>
+        
                 </div>
             </div>
             
@@ -274,270 +366,49 @@
                         </div>
                         <div class="flex items-center">
                             <div class="w-4 h-4 bg-red-500 mr-2"></div>
-                            <span>Occupied</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="w-4 h-4 bg-yellow-500 mr-2"></div>
-                            <span>Reserved</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="w-4 h-4" style="background-color: #8A2BE2;" mr-2></div>
-                            <span>VIP</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="w-4 h-4 bg-blue-500 mr-2"></div>
-                            <span>Motorcycle</span>
+                            <span>Booked</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Parking Layout -->
-                <div class="parking-layout">
-                    <!-- Top Lane -->
-                    <div class="parking-lane">Entrance</div>
+                <div class="w-full px-4">
+                <div class="grid grid-cols-3 gap-1" id="slot-container">
+                    
+                <?php
+                $mall_id = $_SESSION['mall_id'] ?? 1; // default ke 1 kalau belum ada
 
-                    <!-- VIP Row -->
-                    <div class="parking-slot parking-slot-vip parking-slot-reserved" data-slot="V1">
-                        <span class="parking-slot-label">V1</span>
-                        <i class="fas fa-star vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V2">
-                        <span class="parking-slot-label">V2</span>
-                        <i class="fas fa-star vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-occupied" data-slot="V3">
-                        <span class="parking-slot-label">V3</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-occupied" data-slot="V4">
-                        <span class="parking-slot-label">V4</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V5">
-                        <span class="parking-slot-label">V5</span>
-                        <i class="fas fa-star vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V6">
-                        <span class="parking-slot-label">V6</span>
-                        <i class="fas fa-star vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-occupied" data-slot="V7">
-                        <span class="parking-slot-label">V7</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V8">
-                        <span class="parking-slot-label">V8</span>
-                        <i class="fas fa-star vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V9">
-                        <span class="parking-slot-label">V9</span>
-                        <i class="fas fa-star vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-vip parking-slot-available" data-slot="V10">
-                        <span class="parking-slot-label">V10</span>
-                        <i class="fas fa-star vehicle-icon"></i>
-                    </div>
+                if ($mall_id == 1) {
+                    $slotCodes = ['CP-P1', 'CP-P2', 'CP-P3', 'CP-P4', 'CP-P5', 'CP-P6', 'CP-P7', 'CP-P8', 'CP-P9'];
+                } elseif ($mall_id == 2) {
+                    $slotCodes = ['SP-P1', 'SP-P2', 'SP-P3', 'SP-P4', 'SP-P5', 'SP-P6', 'SP-P7', 'SP-P8', 'SP-P9'];
+                } elseif ($mall_id == 3) {
+                    $slotCodes = ['DP-P1', 'DP-P2', 'DP-P3', 'DP-P4', 'DP-P5', 'DP-P6', 'DP-P7', 'DP-P8', 'DP-P9'];
+                } else {
+                    $slotCodes = []; // Kalau mall belum diatur
+                }
+                
 
-                    <!-- Lane -->
-                    <div class="parking-lane">VIP Area</div>
+                foreach ($slotCodes as $code) {
+                    $stmt = $pdo->prepare("SELECT id, status FROM parking_slots WHERE slot_code = :slot_code AND mall_id = :mall_id");
+                    $stmt->execute(['slot_code' => $code, 'mall_id' => $mall_id]);
+                    $slot = $stmt->fetch();
 
-                    <!-- First Row (Row A) -->
-                    <div class="parking-slot parking-slot-available" data-slot="A1">
-                        <span class="parking-slot-label">A1</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="A2">
-                        <span class="parking-slot-label">A2</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-occupied" data-slot="A3">
-                        <span class="parking-slot-label">A3</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-reserved" data-slot="A4">
-                        <span class="parking-slot-label">A4</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="A5">
-                        <span class="parking-slot-label">A5</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="A6">
-                        <span class="parking-slot-label">A6</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-occupied" data-slot="A7">
-                        <span class="parking-slot-label">A7</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="A8">
-                        <span class="parking-slot-label">A8</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-reserved" data-slot="A9">
-                        <span class="parking-slot-label">A9</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="A10">
-                        <span class="parking-slot-label">A10</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-
-                    <!-- Lane -->
-                    <div class="parking-lane">Main Aisle</div>
-
-                    <!-- Second Row (Row B) -->
-                    <div class="parking-slot parking-slot-available" data-slot="B1">
-                        <span class="parking-slot-label">B1</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-occupied" data-slot="B2">
-                        <span class="parking-slot-label">B2</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="B3">
-                        <span class="parking-slot-label">B3</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-reserved" data-slot="B4">
-                        <span class="parking-slot-label">B4</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="B5">
-                        <span class="parking-slot-label">B5</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-occupied" data-slot="B6">
-                        <span class="parking-slot-label">B6</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="B7">
-                        <span class="parking-slot-label">B7</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="B8">
-                        <span class="parking-slot-label">B8</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-reserved" data-slot="B9">
-                        <span class="parking-slot-label">B9</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-available" data-slot="B10">
-                        <span class="parking-slot-label">B10</span>
-                        <i class="fas fa-car vehicle-icon"></i>
-                    </div>
-
-                    <!-- Lane -->
-                    <div class="parking-lane">Motorcycle Area</div>
-
-                    <!-- Motorcycle Row -->
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M1">
-                        <span class="parking-slot-label">M1</span>
-                        <i class="fas fa-motorcycle"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M2">
-                        <span class="parking-slot-label">M2</span>
-                        <i class="fas fa-motorcycle"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-occupied" data-slot="M3">
-                        <span class="parking-slot-label">M3</span>
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M4">
-                        <span class="parking-slot-label">M4</span>
-                        <i class="fas fa-motorcycle"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M5">
-                        <span class="parking-slot-label">M5</span>
-                        <i class="fas fa-motorcycle"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-occupied" data-slot="M6">
-                        <span class="parking-slot-label">M6</span>
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M7">
-                        <span class="parking-slot-label">M7</span>
-                        <i class="fas fa-motorcycle"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-occupied" data-slot="M8">
-                        <span class="parking-slot-label">M8</span>
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M9">
-                        <span class="parking-slot-label">M9</span>
-                        <i class="fas fa-motorcycle"></i>
-                    </div>
-                    <div class="parking-slot parking-slot-motorcycle parking-slot-available" data-slot="M10">
-                        <span class="parking-slot-label">M10</span>
-                        <i class="fas fa-motorcycle"></i>
-                    </div>
-
-                    <!-- Bottom Lane -->
-                    <div class="parking-lane">Exit</div>
-                </div>
-
-                <!-- Booking Section -->
-                <div class="mt-8 border-t pt-6">
-                    <h3 class="text-xl font-semibold mb-4">Booking Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block mb-2">Selected Slot</label>
-                            <input type="text" id="selectedSlot" readonly class="w-full border rounded-md px-3 py-2 bg-gray-100" placeholder="No slot selected">
-                        </div>
-                        <div>
-                            <label class="block mb-2">Vehicle Type</label>
-                            <select class="w-full border rounded-md px-3 py-2" id="vehicleType">
-                                <option value="car">Car</option>
-                                <option value="suv">SUV</option>
-                                <option value="motorcycle">Motorcycle</option>
-                                <option value="vip">VIP</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block mb-2">Entry Time</label>
-                            <input type="datetime-local" class="w-full border rounded-md px-3 py-2">
-                        </div>
-                        <div>
-                            <label class="block mb-2">Expected Exit Time</label>
-                            <input type="datetime-local" class="w-full border rounded-md px-3 py-2">
-                        </div>
-                    </div>
-                    <div class="mt-6 text-center">
-                        <button class="btn-navy">
-                            Book Slot
-                        </button>
-                    </div>
+                    if ($slot) {
+                        $class = $slot['status'] === 'available' ? 'available' : 'occupied';
+                        echo "<div class='parking-slot {$class}' data-id='{$slot['id']}'>" . htmlspecialchars($code) . "</div>";
+                    } else {
+                        echo "<div class='parking-slot occupied'>" . htmlspecialchars($code) . "</div>"; // Default kalau ga ketemu
+                    }
+                }
+                ?>
                 </div>
             </div>
-        
-            <!-- Advanced Dashboard Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                <!-- Active Parking Sessions -->
-                <div class="bg-white shadow-md rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-4">
-                        <i class="fas fa-parking mr-2 text-green-600"></i>Active Parking
-                    </h2>
-                    <div class="space-y-4">
-                        <div class="flex justify-between border-b pb-2">
-                            <span>Total Active Sessions</span>
-                            <span class="font-bold">158</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-2">
-                            <span>Cars</span>
-                            <span class="font-bold text-blue-600">95</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-2">
-                            <span>Motorcycles</span>
-                            <span class="font-bold text-green-600">63</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>VIP Vehicles</span>
-                            <span class="font-bold text-purple-600">4</span>
-                        </div>
-                    </div>
-                </div>
             </div>
+            
+
+
+
 
             <!-- Detailed Transaction Log -->
             <div class="bg-white shadow-md rounded-lg p-6 mt-8">
@@ -545,12 +416,12 @@
                     <i class="fas fa-list mr-2 text-gray-600"></i>Detailed Transaction Log
                 </h2>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                    <table class="w-full text-sm border border-gray-300">
                         <thead class="bg-gray-100">
                             <tr>
                                 <th class="p-3 text-left">Reservation Status</th>
                                 <th class="p-3 text-left">Vehicle No</th>
-                                <th class="p-3 text-left">Type</th>
+                                <th class="p-3 text-left">Slot</th>
                                 <th class="p-3 text-left">Entry Time</th>
                                 <th class="p-3 text-left">Exit Time</th>
                                 <th class="p-3 text-left">Duration</th>
@@ -559,134 +430,55 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-b status-reserved">
+                            <?php foreach ($reservations as $reservation): ?>
+                            <?php
+                                $status = strtolower($reservation['status']);
+                                $rowClass = '';
+                                if ($status === 'completed') {
+                                    $rowClass = 'status-complete';
+                                } elseif ($status === 'reserved' || $status === 'pending') {
+                                    $rowClass = 'status-pending';
+                                } elseif ($status === 'cancelled' || $status === 'canceled') {
+                                    $rowClass = 'status-cancel';
+                                }
+                                ?>
+                                <tr class="border-b <?php echo $rowClass; ?>">
+                                <td class="p-3"><?php echo ucfirst(htmlspecialchars($reservation['status'])); ?></td>
+
+                                <td class="p-3"><?php echo htmlspecialchars($reservation['plate']); ?></td>
+                                <td class="p-3"><?php echo htmlspecialchars($reservation['slot_code']); ?></td>
+                                <td class="p-3"><?php echo htmlspecialchars($reservation['waktu_masuk']); ?></td>
+                                <td class="p-3"><?php echo htmlspecialchars($reservation['waktu_keluar']); ?></td>
+                                <td class="p-3"><?php echo htmlspecialchars($reservation['durasi']); ?> menit</td>
+                                <td class="p-3">Rp. <?php echo htmlspecialchars($reservation['biaya']); ?></td>
                                 <td class="p-3">
-                                    <span class="status-badge text-yellow-700" title="Reserved Parking">
-                                        <i class="fas fa-clock"></i>Reserved
-                                    </span>
-                                </td>
-                                <td class="p-3">B 1234 XYZ</td>
-                                <td class="p-3">Car</td>
-                                <td class="p-3">Scheduled: 02:00 PM</td>
-                                <td class="p-3">-</td>
-                                <td class="p-3">Pending</td>
-                                <td class="p-3">Rp 25,000 (Advance)</td>
-                                <td class="p-3">
-                                    <button class="bg-yellow-500 text-white px-2 py-1 rounded text-xs mr-2">
-                                        <i class="fas fa-edit mr-1"></i>Modify
+                                <form method="POST" style="display:inline;">
+                                    <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded text-xs mr-2" name="complete_reservation" value="<?= $reservation['id'] ?>">
+                                        <i class="fas fa-edit mr-1"></i>Complete
                                     </button>
-                                    <button class="bg-red-500 text-white px-2 py-1 rounded text-xs">
+                                </form>
+                                <form method="POST" style="display:inline;">
+                                    <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-xs" name="cancel_reservation" value="<?= $reservation['id'] ?>">
                                         <i class="fas fa-times mr-1"></i>Cancel
                                     </button>
+                                </form>
                                 </td>
                             </tr>
-                            <tr class="border-b status-ongoing">
-                                <td class="p-3">
-                                    <span class="status-badge text-info" title="Ongoing Parking">
-                                        <i class="fas fa-parking"></i>Ongoing
-                                    </span>
-                                </td>
-                                <td class="p-3">B 5678 ABC</td>
-                                <td class="p-3">Motorcycle</td>
-                                <td class="p-3">08:15 AM</td>
-                                <td class="p-3">-</td>
-                                <td class="p-3">3h 45m</td>
-                                <td class="p-3">Rp 20,000</td>
-                                <td class="p-3">
-                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs mr-2">
-                                        <i class="fas fa-eye mr-1"></i>Details
-                                    </button>
-                                    <button class="bg-green-500 text-white px-2 py-1 rounded text-xs">
-                                        <i class="fas fa-check-circle mr-1"></i>Check Out
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="border-b status-completed">
-                                <td class="p-3">
-                                    <span class="status-badge text-success" title="Completed Parking">
-                                        <i class="fas fa-check-circle"></i>Completed
-                                    </span>
-                                </td>
-                                <td class="p-3">B 9012 DEF</td>
-                                <td class="p-3">Car</td>
-                                <td class="p-3">06:30 AM</td>
-                                <td class="p-3">09:45 AM</td>
-                                <td class="p-3">3h 15m</td>
-                                <td class="p-3">Rp 45,000</td>
-                                <td class="p-3">
-                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs mr-2">
-                                    <i class="fas fa-print mr-1"></i>Receipt
-                                    </button>
-                                    <button class="bg-gray-500 text-white px-2 py-1 rounded text-xs">
-                                        <i class="fas fa-archive mr-1"></i>Archive
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="border-b status-reserved">
-                                <td class="p-3">
-                                    <span class="status-badge text-yellow-700" title="Reserved Parking">
-                                        <i class="fas fa-clock"></i>Reserved
-                                    </span>
-                                </td>
-                                <td class="p-3">B 3456 GHI</td>
-                                <td class="p-3">SUV</td>
-                                <td class="p-3">Scheduled: 04:30 PM</td>
-                                <td class="p-3">-</td>
-                                <td class="p-3">Pending</td>
-                                <td class="p-3">Rp 30,000 (Advance)</td>
-                                <td class="p-3">
-                                    <button class="bg-yellow-500 text-white px-2 py-1 rounded text-xs mr-2">
-                                        <i class="fas fa-edit mr-1"></i>Modify
-                                    </button>
-                                    <button class="bg-red-500 text-white px-2 py-1 rounded text-xs">
-                                        <i class="fas fa-times mr-1"></i>Cancel
-                                    </button>
-                                </td>
-                            </tr>
+                            <?php endforeach; ?>
+
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        // Select parking slot functionality
-        const parkingSlots = document.querySelectorAll('.parking-slot');
-        const selectedSlotInput = document.getElementById('selectedSlot');
-        
-        parkingSlots.forEach(slot => {
-            slot.addEventListener('click', function() {
-                // Only allow selection of available slots (both VIP and non-VIP)
-                if (this.classList.contains('parking-slot-available')) {
-                    // Remove selected class from all slots
-                    parkingSlots.forEach(s => s.classList.remove('parking-slot-selected'));
-                    
-                    // Add selected class to clicked slot
-                    this.classList.add('parking-slot-selected');
-                    
-                    // Update selected slot input
-                    selectedSlotInput.value = this.getAttribute('data-slot');
-                }
-            });
-        });
-    </script>
-    <script>
-        // Mengambil semua slot VIP
-        const vipSlots = document.querySelectorAll('.parking-slot-vip');
-
-        vipSlots.forEach(slot => {
-            if (slot.classList.contains('parking-slot-reserved')) {
-                // Jika slot VIP sudah direserve
-                console.log(`Slot ${slot.getAttribute('data-slot')} sudah direserve.`);
-                slot.querySelector('.parking-slot-label').textContent += " (Reserved)"; // Menambahkan label Reserved
-            } else {
-                // Jika slot VIP tersedia
-                console.log(`Slot ${slot.getAttribute('data-slot')} tersedia.`);
-            }
-        });
-    </script>
-
-
 </body>
+<script>
+document.getElementById('dropdownMenuButton').addEventListener('click', function() {
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    dropdownMenu.classList.toggle('show'); // toggle visibility of the dropdown
+});
+</script>
+
+
 </html>
