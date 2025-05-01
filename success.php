@@ -1,3 +1,14 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>
+        alert('Silakan login terlebih dahulu!');
+        window.location.href = 'login.php';
+    </script>";
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -93,8 +104,8 @@
             </a>
         </div>
         <div class="d-flex align-items-center">
-            <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
-            <span class="fw-bold text-navy">Fedor Reyes</span>
+            <img src="<?php echo $_SESSION['foto_profile']; ?>" alt="Foto Profil" class="profile-img me-2">
+            <span class="fw-bold text-navy"><?php echo htmlspecialchars($_SESSION['user_nama']); ?></span>
         </div>
     </nav>
     
@@ -135,7 +146,7 @@
             <h3><span class="success-icon">✔️</span></h3>
             <h3>Top Up Berhasil!</h3>
             <p>Saldo Anda telah bertambah.</p>
-            <a href="topup.php" class="btn btn-success">Kembali ke Top Up</a>
+            <a href="dompet.php" class="btn btn-success">Kembali ke Dompet</a>
         </div>
     </div>
 
