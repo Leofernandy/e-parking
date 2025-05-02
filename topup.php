@@ -1,10 +1,20 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>
+        alert('Silakan login terlebih dahulu!');
+        window.location.href = 'login.php';
+    </script>";
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservasi - Parkeer</title>
-    <link rel="shortcut icon" href="assets/img/Logobgwhite.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -94,8 +104,8 @@
             </a>
         </div>
         <div class="d-flex align-items-center">
-            <img src="assets/img/profilepic.jpg" alt="Foto Profil" class="profile-img me-2">
-            <span class="fw-bold text-navy">Fedor Reyes</span>
+            <img src="<?php echo $_SESSION['foto_profile']; ?>" alt="Foto Profil" class="profile-img me-2">
+            <span class="fw-bold text-navy"><?php echo htmlspecialchars($_SESSION['user_nama']); ?></span>
         </div>
     </nav>
     
@@ -171,7 +181,7 @@
             <div class="top-up-method">
                 <h5><i class="bi bi-credit-card"></i> ATM</h5>
                 <div class="bank-list">
-                    <a href="konfirmasi_top_up.php">
+                    <a href="konfirmasi_top_up.php?method=BCA">
                         <div class="bank-item">
                             <img src="assets/img/bca.png" alt="BCA" class="bank-logo"> BCA
                         </div>
@@ -191,14 +201,17 @@
             <div class="top-up-method">
                 <h5><i class="bi bi-phone"></i> Internet / Mobile Banking</h5>
                 <div class="bank-list">
-                    <a href="konfirmasi_top_up.php">
+                    <a href="konfirmasi_top_up.php?method=m-BCA">
                         <div class="bank-item">
                             <img src="assets/img/bcam.png" alt="BCA" class="bank-logo"> m-BCA
                         </div>
                     </a>
-                    <div class="bank-item">
-                        <img src="assets/img/livin.jpg" alt="Mandiri" class="bank-logo"> Livin' by Mandiri
-                    </div>
+                    <a href="konfirmasi_top_up.php?method=Livin">
+                        <div class="bank-item">
+                            <img src="assets/img/livin.jpg" alt="Mandiri" class="bank-logo"> Livin' by Mandiri
+                        </div>
+                    </a>
+
                     <div class="bank-item">
                         <img src="assets/img/brimo.png" alt="BRI" class="bank-logo"> BRI Mobile
                     </div>
